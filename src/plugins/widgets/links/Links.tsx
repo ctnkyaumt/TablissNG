@@ -89,6 +89,7 @@ const Links: FC<Props> = ({ data = defaultData, setData, cache = defaultCache })
             linksNumbered={data.linksNumbered}
             customWidth={data.customWidth}
             customHeight={data.customHeight}
+            showUnderlineOnHover={data.showUnderlineOnHover}
             cache={cache}
             onLinkClick={() => handleLinkClick(link.id)}
             {...link}

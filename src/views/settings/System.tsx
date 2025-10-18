@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { FormattedMessage } from "react-intl";
 import { db } from "../../db/state";
 import { useKey } from "../../lib/db/react";
@@ -26,6 +26,7 @@ const positions = [
 ] as const;
 
 const System: React.FC = () => {
+  const [isOpen, setIsOpen] = useState(false);
   const [locale, setLocale] = useKey(db, "locale");
   const [timeZone, setTimeZone] = useKey(db, "timeZone");
   const [highlightingEnabled, setHighlightingEnabled] = useKey(db, "highlightingEnabled");
@@ -54,14 +55,35 @@ const System: React.FC = () => {
   };
 
   return (
-    <div>
-      <h2>
-        <FormattedMessage
-          id="settings"
-          defaultMessage="Settings"
-          description="Settings title"
-        />
-      </h2>
+    <fieldset className="Widget">
+      <div className="title--buttons">
+        <IconButton
+          onClick={() => setIsOpen(!isOpen)}
+          title={isOpen ? "Close settings" : "Edit settings"}
+        >
+          <Icon name="settings" />
+        </IconButton>
+
+        <h4 onClick={() => setIsOpen(!isOpen)}>
+          <FormattedMessage
+            id="settings"
+            defaultMessage="Settings"
+            description="Settings title"
+          />
+        </h4>
+        {!isOpen && (
+          <p>
+            <FormattedMessage
+              id="settings.description.short"
+              defaultMessage="Language, theme, and other preferences"
+              description="Short description of settings"
+            />
+          </p>
+        )}
+      </div>
+
+      {isOpen && (
+        <div>
 
       <label
         style={{
@@ -391,7 +413,9 @@ const System: React.FC = () => {
           onChange={(e) => setAutoHideSettings(e.target.checked)}
         />
       </label>
-    </div>
+        </div>
+      )}
+    </fieldset>
   );
 };
 

@@ -22,8 +22,6 @@ jobs:
       matrix:
         build_target:
           - chromium
-          - firefox
-          - web
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -37,35 +35,8 @@ jobs:
           UNSPLASH_API_KEY: ${{ secrets.UNSPLASH_API_KEY }}
           NASA_API_KEY: ${{ secrets.NASA_API_KEY }}
 
-      # Use upload-pages-artifact only for web
-      - uses: actions/upload-pages-artifact@v3
-        if: matrix.build_target == 'web'
-        with:
-          name: tabliss-web
-          path: dist/web
-
-      # Use upload-artifact for other build targets
+      # Upload chromium build artifact
       - uses: actions/upload-artifact@v4
-        if: matrix.build_target != 'web'
         with:
           name: tabliss-${{ matrix.build_target }}
           path: dist/${{ matrix.build_target }}
-
-  deploy:
-    name: Deploy to GitHub Pages
-    needs: build
-    if: github.ref == 'refs/heads/main'  # Only deploy on main branch
-    runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          artifact_name: tabliss-web

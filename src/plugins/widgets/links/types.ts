@@ -39,6 +39,7 @@ export type Data = {
   iconifyIdentifier: string;
   iconifyValue?: string;
   conserveAspectRatio?: boolean;
+  showUnderlineOnHover?: boolean;
 };
 
 export type Props = API<Data, Cache>;
@@ -64,6 +65,7 @@ export const defaultData: Data = {
   customHeight: 24,
   iconifyIdentifier: "feather:",
   conserveAspectRatio: false,
+  showUnderlineOnHover: false,
 };
 
 export const defaultCache: Cache = {};

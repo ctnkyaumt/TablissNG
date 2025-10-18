@@ -51,6 +51,12 @@ export interface WidgetState {
   display: WidgetDisplay;
 }
 
+export interface TimeBasedColor {
+  id: string;
+  time: string; // format "HH:mm" e.g. "12:00"
+  color: string; // hex color
+}
+
 export interface WidgetDisplay {
   x?: number;
   y?: number;
@@ -72,6 +78,8 @@ export interface WidgetDisplay {
   textDecoration?: "none" | "underline";
   position: WidgetPosition;
   customClass?: string;
+  timeBasedColors?: TimeBasedColor[];
+  useTimeBasedColors?: boolean;
 }
 
 export type WidgetPosition =

@@ -245,19 +245,98 @@ const Widget: React.FC<Props> = ({
               </label>
 
               <label>
-              <FormattedMessage
-          id="colour"
-          defaultMessage="Colour"
-          description="Colour title"
-        /> <br />
                 <input
-                  type="color"
-                  value={plugin.display.colour ?? "#ffffff"}
+                  type="checkbox"
+                  checked={plugin.display.useTimeBasedColors ?? false}
                   onChange={(event) =>
-                    setDisplay({ colour: event.target.value })
+                    setDisplay({ useTimeBasedColors: event.target.checked })
                   }
+                />{" "}
+                <FormattedMessage
+                  id="settings.font.useTimeBasedColors"
+                  defaultMessage="Use time-based colors"
+                  description="Use time-based colors option"
                 />
               </label>
+
+              {!plugin.display.useTimeBasedColors && (
+                <label>
+                  <FormattedMessage
+                    id="colour"
+                    defaultMessage="Colour"
+                    description="Colour title"
+                  /> <br />
+                  <input
+                    type="color"
+                    value={plugin.display.colour ?? "#ffffff"}
+                    onChange={(event) =>
+                      setDisplay({ colour: event.target.value })
+                    }
+                  />
+                </label>
+              )}
+
+              {plugin.display.useTimeBasedColors && (
+                <div style={{ marginTop: "1rem" }}>
+                  <p>
+                    <FormattedMessage
+                      id="settings.font.timeBasedColors.description"
+                      defaultMessage="Colors will smoothly transition based on the time of day"
+                      description="Description for time-based colors"
+                    />
+                  </p>
+                  {(plugin.display.timeBasedColors || []).map((tbc, index) => (
+                    <div key={tbc.id} style={{ display: "flex", gap: "0.5rem", marginBottom: "0.5rem", alignItems: "center" }}>
+                      <input
+                        type="time"
+                        value={tbc.time}
+                        onChange={(event) => {
+                          const newColors = [...(plugin.display.timeBasedColors || [])];
+                          newColors[index] = { ...tbc, time: event.target.value };
+                          setDisplay({ timeBasedColors: newColors });
+                        }}
+                      />
+                      <input
+                        type="color"
+                        value={tbc.color}
+                        onChange={(event) => {
+                          const newColors = [...(plugin.display.timeBasedColors || [])];
+                          newColors[index] = { ...tbc, color: event.target.value };
+                          setDisplay({ timeBasedColors: newColors });
+                        }}
+                      />
+                      <IconButton
+                        onClick={() => {
+                          const newColors = (plugin.display.timeBasedColors || []).filter((_, i) => i !== index);
+                          setDisplay({ timeBasedColors: newColors });
+                        }}
+                        title="Remove color"
+                      >
+                        <RemoveIcon />
+                      </IconButton>
+                    </div>
+                  ))}
+                  <button
+                    className="button button--primary"
+                    onClick={() => {
+                      const newColor = {
+                        id: Date.now().toString(),
+                        time: "12:00",
+                        color: "#ffffff"
+                      };
+                      setDisplay({
+                        timeBasedColors: [...(plugin.display.timeBasedColors || []), newColor]
+                      });
+                    }}
+                  >
+                    <FormattedMessage
+                      id="settings.font.addTimeBasedColor"
+                      defaultMessage="+ Add time color"
+                      description="Button to add time-based color"
+                    />
+                  </button>
+                </div>
+              )}
 
               <label>
                 <input

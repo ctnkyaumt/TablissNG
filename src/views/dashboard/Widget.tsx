@@ -2,6 +2,7 @@ import React from "react";
 import { WidgetDisplay, WidgetPosition } from "../../db/state";
 import { setWidgetDisplay } from "../../db/action";
 import FloatingSaveButton from '../shared/FloatingSaveButton';
+import { useTimeBasedColor } from "../../hooks";
 
 interface WidgetProps extends WidgetDisplay {
   id: string;
@@ -29,8 +30,11 @@ const Widget: React.FC<WidgetProps> = ({
   xPercent = 50,
   yPercent = 50,
   isEditingPosition = false,
-  customClass
+  customClass,
+  timeBasedColors,
+  useTimeBasedColors
 }) => {
+  const timeBasedColor = useTimeBasedColor(timeBasedColors, useTimeBasedColors);
   const widgetRef = React.useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = React.useState(false);
   const [dragStart, setDragStart] = React.useState({ x: 0, y: 0 });
@@ -152,7 +156,7 @@ const Widget: React.FC<WidgetProps> = ({
 
   const styles: React.CSSProperties = {
     position: position === "free" ? "absolute" : "relative",
-    color: colour,
+    color: timeBasedColor || colour,
     fontFamily,
     fontSize: `${fontSize}px`,
     fontWeight,

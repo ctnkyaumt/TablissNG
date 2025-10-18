@@ -54,6 +54,7 @@ type Props = Link & {
   linksNumbered: boolean;
   cache?: Cache;
   onLinkClick?: () => void;
+  showUnderlineOnHover?: boolean;
 };
 
 const Display: FC<Props> = ({
@@ -75,6 +76,7 @@ const Display: FC<Props> = ({
   customHeight,
   conserveAspectRatio,
   onLinkClick,
+  showUnderlineOnHover,
 }) => {
   const intl = useIntl();
   const title = useMemo(
@@ -127,6 +129,19 @@ const Display: FC<Props> = ({
       rel="noopener noreferrer"
       target={linkOpenStyle ? "_blank" : "_self"}
       title={title}
+      style={{
+        textDecoration: showUnderlineOnHover ? "none" : undefined,
+      }}
+      onMouseEnter={(e) => {
+        if (showUnderlineOnHover) {
+          e.currentTarget.style.textDecoration = "underline";
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (showUnderlineOnHover) {
+          e.currentTarget.style.textDecoration = "none";
+        }
+      }}
     >
       {linksNumbered ? <span className="LinkNumber">{number} </span> : null}
       {icon === "_favicon_duckduckgo" && domain ? (

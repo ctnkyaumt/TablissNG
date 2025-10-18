@@ -10,7 +10,6 @@ import Persist from "./Persist";
 import "./Settings.sass";
 import System from "./System";
 import Widgets from "./Widgets";
-import GitHubButton from "react-github-btn";
 import { db } from "../../db/state";
 import { useKey } from "../../lib/db/react";
 import { useTheme } from "../../hooks";
@@ -129,66 +128,6 @@ const Settings: React.FC = () => {
         onMouseLeave={() => setIsHovered(false)}
       >
         <Logo />
-        <div
-          style={{
-            textAlign: "center",
-            margin: "-0.5rem 0 1rem",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "0.5rem",
-          }}
-        >
-          <span
-            style={{
-              background: isDark ? "#2d2d2d" : "#f0f0f0",
-              padding: "0.3rem 0.8rem",
-              borderRadius: "1rem",
-              fontSize: "0.9rem",
-              color: isDark ? "#e0e0e0" : "#666",
-              fontWeight: 500,
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "0.3rem",
-            }}
-          >
-            <Icon icon="feather:tag" style={{ fontSize: "0.9em" }} />
-            TablissNG v{VERSION} {DEV ? "DEV " : ""}
-          </span>
-        </div>
-        {React.useMemo(() => (
-          <p style={{ textAlign: "center", marginTop: 0, marginBottom: 0 }}>
-            <GitHubButton
-              href="https://github.com/BookCatKid/tablissNG/subscription"
-              data-icon="octicon-eye"
-              data-size="large"
-              data-show-count="true"
-              data-color-scheme={isDark ? "dark" : "light"}
-              aria-label="Watch BookCatKid/tablissNG on GitHub"
-            >
-              <FormattedMessage
-                id="settings.github.watch"
-                defaultMessage="Watch"
-                description="GitHub Watch button text"
-              />
-            </GitHubButton>
-            <span style={{ margin: "0 1rem" }} />
-            <GitHubButton
-              href="https://github.com/BookCatKid/tablissNG"
-              data-icon="octicon-star"
-              data-size="large"
-              data-show-count="true"
-              data-color-scheme={isDark ? "dark" : "light"}
-              aria-label="Star BookCatKid/tablissNG on GitHub"
-            >
-              <FormattedMessage
-                id="settings.github.star"
-                defaultMessage="Star"
-                description="GitHub Star button text"
-              />
-            </GitHubButton>
-          </p>
-        ), [isDark])}
         <Background />
         <Widgets />
         <System />
@@ -227,50 +166,39 @@ const Settings: React.FC = () => {
           />
         </p>
         <Persist />
-        <div style={{ textAlign: "center" }} className="Widget">
-          <h4><FormattedMessage
-          id="support"
-          defaultMessage="Support TablissNG"
-          description="Support TablissNG button text"
-        /></h4>
-          <p>
-            <a
-              href="https://github.com/BookCatKid/tablissNG/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="button button--primary"
-            >
-              <Icon icon="feather:github" />{" "}
-              <FormattedMessage
-                id="settings.support.star"
-                defaultMessage="Star the github repository! 🌟😍"
-                description="Call to action to star the GitHub repository"
-              />
-            </a>
-          </p>
-          <p style={{ marginTop: "1rem" }} className="Widget">
-            <a
-              href="https://github.com/BookCatKid/tablissNG/blob/main/CONTRIBUTING.md"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="button button--primary"
-            >
-              <Icon icon="feather:code" />{" "}
-              <FormattedMessage
-                id="settings.support.contribute"
-                defaultMessage="Contribute to the project! 😍🌟"
-                description="Call to action to contribute to the project"
-              />
-            </a>
-          </p>
-        </div>
-
         <FormattedMessage
           id="settings.translationCredits"
           description="Give yourself some credit :)"
           defaultMessage=" "
           tagName="p"
         />
+        <div
+          style={{
+            textAlign: "center",
+            marginTop: "2rem",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "0.5rem",
+          }}
+        >
+          <span
+            style={{
+              background: isDark ? "#2d2d2d" : "#f0f0f0",
+              padding: "0.3rem 0.8rem",
+              borderRadius: "1rem",
+              fontSize: "0.9rem",
+              color: isDark ? "#e0e0e0" : "#666",
+              fontWeight: 500,
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "0.3rem",
+            }}
+          >
+            <Icon icon="feather:tag" style={{ fontSize: "0.9em" }} />
+            TablissNG v{VERSION} {DEV ? "DEV " : ""}
+          </span>
+        </div>
       </div>
     </div>
   );

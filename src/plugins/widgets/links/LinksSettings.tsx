@@ -133,6 +133,21 @@ const LinksSettings: FC<Props> = ({ data = defaultData, setData, cache = default
           description="Links are numbered title"
         />
       </label>
+
+      <label>
+        <input
+          type="checkbox"
+          checked={data.showUnderlineOnHover ?? false}
+          onChange={() =>
+            setData({ ...data, showUnderlineOnHover: !data.showUnderlineOnHover })
+          }
+        />
+        <FormattedMessage
+          id="plugins.links.showUnderlineOnHover"
+          defaultMessage="Show underline on hover"
+          description="Show underline when hovering over links"
+        />
+      </label>
       <hr />
 
       {sortedLinks.map((link, index) => {
