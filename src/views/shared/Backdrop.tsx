@@ -37,7 +37,7 @@ const Backdrop: React.FC<Props> = ({
     }
   }
 
-  if (scale) {
+  if (scale || scale == null) {
     style["backgroundSize"] = "cover";
   } else if (!scale) {
     style["backgroundSize"] = "contain";

@@ -195,7 +195,7 @@ const Background: React.FC = () => {
                 <label>
                   <input
                     type="checkbox"
-                    checked={data.display.scale}
+                    checked={data.display.scale ?? true}
                     onChange={(e) => {
                       setBackgroundDisplay({
                         scale: e.target.checked,
