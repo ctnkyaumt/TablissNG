@@ -3,6 +3,9 @@ import * as Stream from "./stream";
 
 /** IndexedDB storage provider */
 // TODO: clean up indexeddb usage, convert to promises and double check error handling
+
+const SAVE_BATCH_TIMEOUT = 1000; // 1s
+
 export const indexeddb = (
   db: DB.Database,
   name: string,
@@ -68,7 +71,7 @@ export const indexeddb = (
                 if (val === undefined) store.delete(key);
                 else store.put(val, key);
               }
-            }),
+            }, SAVE_BATCH_TIMEOUT),
           );
           resolve(errors);
         }
@@ -133,7 +136,7 @@ export const extension = async (
       storageArea
         .remove(deletes)
         .catch(handleError("Cannot write deletes to storage"));
-    }),
+    }, SAVE_BATCH_TIMEOUT),
   );
 
   return errors;
