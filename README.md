@@ -1,5 +1,6 @@
 # TablissNG
 
+
 <img src="screenshots/screenshot_1.png" width="49%"/> <img src="screenshots/screenshot_2.png" width="50%"/>  
 <img src="screenshots/screenshot_3.png" width="49%"/> <img src="screenshots/screenshot_4.png" width="50%"/>
 <img src="screenshots/screenshot_5.png" width="24%"/>
@@ -7,6 +8,18 @@
 <img src="screenshots/screenshot_7.png" width="24%"/>
 <img src="screenshots/screenshot_8.png" width="24%"/>
 
+<div align="center">
+    <a href="https://chromewebstore.google.com/detail/tablissng/dlaogejjiafeobgofajdlkkhjlignalk">
+        <img src="https://img.shields.io/chrome-web-store/users/dlaogejjiafeobgofajdlkkhjlignalk?logo=googlechrome&logoColor=ffffff"></a>
+    <a href="https://github.com/BookCatKid/TablissNG/stargazers">
+        <img src="https://img.shields.io/github/stars/BookCatKid/TablissNG?style=flat"></a>
+    <a href="https://github.com/BookCatKid/TablissNG/commits/main/">
+        <img src="https://img.shields.io/github/last-commit/BookCatKid/TablissNG"></a>
+    <a href="https://github.com/BookCatKid/TablissNG/releases/latest">
+        <img src="https://img.shields.io/github/v/release/BookCatKid/TablissNG.svg?logo=github"></a>
+    <a href="https://www.gnu.org/licenses/gpl-3.0">
+        <img src="https://img.shields.io/badge/License-GNU%20GPL%20v3-blue"></a>
+</div>
 
 ## Maintained Fork of Tabliss
 
