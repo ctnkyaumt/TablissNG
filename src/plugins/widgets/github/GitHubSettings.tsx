@@ -64,6 +64,21 @@ const GitHubSettings: React.FC<Props> = ({ data = defaultData, setData }) => (
     </label>
 
     <label>
+      <input
+        type="checkbox"
+        checked={data.forceDarkMode}
+        onChange={(event) =>
+          setData({ ...data, forceDarkMode: !data.forceDarkMode })
+        }
+      />{" "}
+      <FormattedMessage
+        id="plugins.github.forceDarkMode"
+        defaultMessage="Force dark mode"
+        description="Option to force dark mode"
+      />
+    </label>
+
+    <label>
       <FormattedMessage
         id="plugins.github.clickAction"
         defaultMessage="Click Action"

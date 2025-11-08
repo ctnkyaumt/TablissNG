@@ -48,6 +48,12 @@ const GitHubCalendarWidget: FC<Props> = ({ data = defaultData }) => {
         hideTotalCount={!data.showTotalCount}
         username={data.username}
         labels={labels}
+        {...(data.forceDarkMode && {
+          colorScheme: "dark",
+          theme: {
+            dark: ['rgb(22, 27, 34)', '#0e4429', '#006d32', '#26a641', '#39d353'],
+          }
+        })}
       />
     </a>
   );
