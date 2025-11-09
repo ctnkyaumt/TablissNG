@@ -136,7 +136,7 @@
   "plugins.github.showColorLegend": "Shfaq legjendën e ngjyrave",
   "plugins.github.showMonthLabels": "Shfaq muajt",
   "plugins.github.showTotalCount": "Shfaq totalin",
-  "plugins.github.totalCount": "{{count}} kontribute në {{year}}",
+  "plugins.github.totalCount": "[count] kontribute në [year]",
   "plugins.github.username": "Emri i përdoruesit në GitHub",
   "plugins.github.weekday.fri": "Pre",
   "plugins.github.weekday.mon": "Hën",

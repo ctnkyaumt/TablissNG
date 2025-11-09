@@ -26,7 +26,7 @@ const GitHubCalendarWidget: FC<Props> = ({ data = defaultData }) => {
       weekdays.sun, weekdays.mon, weekdays.tue, weekdays.wed,
       weekdays.thu, weekdays.fri, weekdays.sat
     ],
-    totalCount: (intl.messages[messages.totalCount.id] as string) || messages.totalCount.defaultMessage || "{{count}} contributions in {{year}}",
+    totalCount: intl.formatMessage(messages.totalCount).replace('[count]', '{{count}}').replace('[year]', '{{year}}'),
     legend: {
       less: legend.less,
       more: legend.more

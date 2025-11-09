@@ -136,7 +136,7 @@
   "plugins.github.showColorLegend": "Renk göstergesini göster",
   "plugins.github.showMonthLabels": "Ay etiketlerini göster",
   "plugins.github.showTotalCount": "Toplam sayıyı göster",
-  "plugins.github.totalCount": "{{year}} yılında {{count}} katkı",
+  "plugins.github.totalCount": "[year] yılında [count] katkı",
   "plugins.github.username": "GitHub Kullanıcı Adı",
   "plugins.github.weekday.fri": "Cum",
   "plugins.github.weekday.mon": "Pzt",

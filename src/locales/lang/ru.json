@@ -136,7 +136,7 @@
   "plugins.github.showColorLegend": "Показать легенду цвета",
   "plugins.github.showMonthLabels": "Показывать месяца",
   "plugins.github.showTotalCount": "Показывать итоговый счётчик",
-  "plugins.github.totalCount": "{{count}} участий в {{year}}",
+  "plugins.github.totalCount": "[count] участий в [year]",
   "plugins.github.username": "Ник на GitHub",
   "plugins.github.weekday.fri": "Пт",
   "plugins.github.weekday.mon": "Пн",

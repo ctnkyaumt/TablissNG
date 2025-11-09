@@ -136,7 +136,7 @@
   "plugins.github.showColorLegend": "Mostrar legenda de cores",
   "plugins.github.showMonthLabels": "Mostrar rótulos dos meses",
   "plugins.github.showTotalCount": "Mostrar contagem total",
-  "plugins.github.totalCount": "{{count}} contribuições em {{year}}",
+  "plugins.github.totalCount": "[count] contribuições em [year]",
   "plugins.github.username": "Nome de usuário GitHub",
   "plugins.github.weekday.fri": "Sex",
   "plugins.github.weekday.mon": "Seg",

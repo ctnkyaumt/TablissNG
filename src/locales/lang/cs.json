@@ -136,7 +136,7 @@
   "plugins.github.showColorLegend": "Zobrazit barevnou legendu",
   "plugins.github.showMonthLabels": "Zobrazit názvy měsíců",
   "plugins.github.showTotalCount": "Zobrazit celkový počet",
-  "plugins.github.totalCount": "{{count}} příspěvků v roce {{year}}",
+  "plugins.github.totalCount": "[count] příspěvků v roce [year]",
   "plugins.github.username": "Uživatelské jméno na GitHubu",
   "plugins.github.weekday.fri": "Pá",
   "plugins.github.weekday.mon": "Po",
