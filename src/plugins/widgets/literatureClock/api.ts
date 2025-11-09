@@ -22,5 +22,30 @@ export async function getQuoteByTimeCode(timeCode: string): Promise<Quote> {
     };
   }
 
-  return body[Math.floor(Math.random() * body.length)];
+  if (sfw) {
+    body = body.filter((quote) => quote.sfw === "yes");
+  }
+
+  if (body.length === 0) {
+    return {
+      title: "No quotes found for this time",
+    };
+  }
+
+  const quote = body[Math.floor(Math.random() * body.length)] as Quote;
+
+  const cleanText = (input: string): string => {
+    return input
+        .replace(/<br\s*\/?>/gi, " ") // <br /> becomes a space
+        .replace(/&amp;/gi, "&");      // &amp; becomes an &
+  };
+
+  const decodedQuote = {
+    ...quote,
+    quote_first: quote.quote_first ? cleanText(quote.quote_first) : "",
+    quote_time_case: quote.quote_time_case ? cleanText(quote.quote_time_case) : "",
+    quote_last: quote.quote_last ? cleanText(quote.quote_last) : "",
+  };
+
+  return decodedQuote;
 }
