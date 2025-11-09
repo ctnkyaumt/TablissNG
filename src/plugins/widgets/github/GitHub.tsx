@@ -2,6 +2,7 @@ import React, { FC } from "react";
 import GitHubCalendar from "react-github-calendar";
 import { useIntl } from "react-intl";
 import { useFormatMessages } from "../../../hooks/useFormatMessages";
+import { useTheme } from "../../../hooks/useTheme";
 import { monthMessages, weekdayMessages, legendMessages, messages } from "./messages";
 import { Props, defaultData } from "./types";
 
@@ -10,6 +11,7 @@ const GitHubCalendarWidget: FC<Props> = ({ data = defaultData }) => {
   const months = useFormatMessages(monthMessages);
   const weekdays = useFormatMessages(weekdayMessages);
   const legend = useFormatMessages(legendMessages);
+  const { isDark } = useTheme();
 
   if (!data.username) return null;
 
@@ -24,7 +26,8 @@ const GitHubCalendarWidget: FC<Props> = ({ data = defaultData }) => {
       weekdays.sun, weekdays.mon, weekdays.tue, weekdays.wed,
       weekdays.thu, weekdays.fri, weekdays.sat
     ],
-    totalCount: intl.formatMessage(messages.totalCount),
+    totalCount: (year: number, count: number) => 
+      intl.formatMessage(messages.totalCount, { year, count }),
     legend: {
       less: legend.less,
       more: legend.more
@@ -48,12 +51,11 @@ const GitHubCalendarWidget: FC<Props> = ({ data = defaultData }) => {
         hideTotalCount={!data.showTotalCount}
         username={data.username}
         labels={labels}
-        {...(data.forceDarkMode && {
-          colorScheme: "dark",
-          theme: {
-            dark: ['rgb(22, 27, 34)', '#0e4429', '#006d32', '#26a641', '#39d353'],
-          }
-        })}
+        colorScheme={isDark ? "dark" : "light"}
+        theme={{
+          light: ['#ebedf0', '#9be9a8', '#40c463', '#30a14e', '#216e39'],
+          dark: ['#161b22', '#0e4429', '#006d32', '#26a641', '#39d353'],
+        }}
       />
     </a>
   );

@@ -6,7 +6,6 @@ type Data = {
   showMonthLabels: boolean;
   showTotalCount: boolean;
   clickAction: "none" | "github" | "profile";
-  forceDarkMode: boolean;
 };
 
 export type Props = API<Data>;
@@ -17,5 +16,4 @@ export const defaultData: Data = {
   showMonthLabels: false,
   showTotalCount: false,
   clickAction: "none",
-  forceDarkMode: false,
 };
