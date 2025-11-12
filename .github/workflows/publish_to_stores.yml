@@ -6,20 +6,8 @@ on:
       - v*.*.*
   workflow_dispatch:
     inputs:
-      skip_firefox_upload:
-        description: "Skip Firefox Store upload"
-        type: boolean
-        default: false
       skip_github_release:
         description: "Skip GitHub Release creation"
-        type: boolean
-        default: false
-      skip_chrome_upload:
-        description: "Skip Chrome Web Store upload"
-        type: boolean
-        default: false
-      skip_edge_upload:
-        description: "Skip Edge Web Store upload"
         type: boolean
         default: false
       ref:
@@ -30,7 +18,7 @@ on:
 
 jobs:
   build:
-    name: Build Chromium CRX
+    name: Build Chromium Package
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -45,15 +33,15 @@ jobs:
           GIPHY_API_KEY: ${{ secrets.GIPHY_API_KEY }}
           UNSPLASH_API_KEY: ${{ secrets.UNSPLASH_API_KEY }}
           NASA_API_KEY: ${{ secrets.NASA_API_KEY }}
-      - name: Create CRX file
+      - name: Create ZIP package
         run: |
           cd dist/chromium
-          zip -r ../../tabliss-chromium.crx ./*
+          zip -r ../../tabliss-chromium.zip ./*
           cd ../..
       - uses: actions/upload-artifact@v4
         with:
-          name: tabliss-chromium-crx
-          path: tabliss-chromium.crx
+          name: tabliss-chromium-zip
+          path: tabliss-chromium.zip
 
   create-release:
     needs: [build]
@@ -68,7 +56,7 @@ jobs:
           ref: ${{ inputs.ref }}
       - uses: actions/download-artifact@v4
         with:
-          name: tabliss-chromium-crx
+          name: tabliss-chromium-zip
           path: .
       - name: Get version without v prefix
         id: version
@@ -85,7 +73,7 @@ jobs:
           name: Version ${{ steps.version.outputs.version }}
           tag_name: ${{ steps.version.outputs.ref }}
           files: |
-            tabliss-chromium.crx
+            tabliss-chromium.zip
           draft: true
           prerelease: false
           generate_release_notes: true

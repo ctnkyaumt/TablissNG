@@ -1,6 +1,7 @@
 name: Push
 
-on: push
+on:
+  workflow_dispatch:
 
 jobs:
   test:
