@@ -43,27 +43,20 @@ function calculateColor(timeBasedColors: TimeBasedColor[], currentTime: Date): s
     timeToMinutes(a.time) - timeToMinutes(b.time)
   );
 
-  const currentMinutes = currentTime.getHours() * 60 + currentTime.getMinutes();
+  const currentMinutes =
+    currentTime.getHours() * 60 +
+    currentTime.getMinutes() +
+    currentTime.getSeconds() / 60 +
+    currentTime.getMilliseconds() / 60000;
 
-  // Find the two colors to interpolate between
-  let beforeIndex = 0;
-  let afterIndex = 0;
-
-  for (let i = 0; i < sortedColors.length; i++) {
-    const colorMinutes = timeToMinutes(sortedColors[i].time);
-    if (colorMinutes <= currentMinutes) {
-      beforeIndex = i;
-    }
-    if (colorMinutes > currentMinutes && afterIndex === 0) {
-      afterIndex = i;
-      break;
-    }
+  // Find the two colors to interpolate between (previous and next anchors)
+  let afterIndex = sortedColors.findIndex(
+    (c) => timeToMinutes(c.time) > currentMinutes
+  );
+  if (afterIndex === -1) {
+    afterIndex = 0; // wrap to first if none after current time
   }
-
-  // If we didn't find an after color, wrap around to the first color
-  if (afterIndex === 0) {
-    afterIndex = 0;
-  }
+  const beforeIndex = (afterIndex - 1 + sortedColors.length) % sortedColors.length;
 
   const beforeColor = sortedColors[beforeIndex];
   const afterColor = sortedColors[afterIndex];
@@ -113,8 +106,8 @@ export function useTimeBasedColor(
     // Update immediately
     updateColor();
 
-    // Update every minute
-    const interval = setInterval(updateColor, 60000);
+    // Update frequently for smooth transitions
+    const interval = setInterval(updateColor, 5000);
 
     return () => clearInterval(interval);
   }, [timeBasedColors, useTimeBasedColors]);
