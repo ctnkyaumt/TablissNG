@@ -55,32 +55,25 @@ const System: React.FC = () => {
   };
 
   return (
-    <fieldset className="Widget">
-      <div className="title--buttons">
-        <IconButton
-          onClick={() => setIsOpen(!isOpen)}
-          title={isOpen ? "Close settings" : "Edit settings"}
-        >
-          <Icon name="settings" />
-        </IconButton>
+    <div>
+      <h2>
+        <FormattedMessage
+          id="settings"
+          defaultMessage="Settings"
+          description="Settings title"
+        />
+      </h2>
 
-        <h4 onClick={() => setIsOpen(!isOpen)}>
+      <p>
+        <a onClick={() => setIsOpen(!isOpen)} style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem" }}>
+          <Icon name={isOpen ? "chevron-down" : "chevron-right"} />
           <FormattedMessage
-            id="settings"
-            defaultMessage="Settings"
-            description="Settings title"
+            id="settings.description.short"
+            defaultMessage="Language, theme, and other preferences"
+            description="Short description of settings"
           />
-        </h4>
-        {!isOpen && (
-          <p>
-            <FormattedMessage
-              id="settings.description.short"
-              defaultMessage="Language, theme, and other preferences"
-              description="Short description of settings"
-            />
-          </p>
-        )}
-      </div>
+        </a>
+      </p>
 
       {isOpen && (
         <div>
@@ -415,7 +408,7 @@ const System: React.FC = () => {
       </label>
         </div>
       )}
-    </fieldset>
+    </div>
   );
 };
 
