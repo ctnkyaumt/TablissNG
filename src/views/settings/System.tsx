@@ -55,25 +55,18 @@ const System: React.FC = () => {
   };
 
   return (
-    <div>
-      <h2>
+    <div style={{ marginBottom: "2rem" }}>
+      <h2
+        onClick={() => setIsOpen(!isOpen)}
+        style={{ display: "flex", alignItems: "center", gap: "0.4rem", cursor: "pointer" }}
+      >
+        <Icon name={isOpen ? "chevron-down" : "chevron-right"} />
         <FormattedMessage
           id="settings"
           defaultMessage="Settings"
           description="Settings title"
         />
       </h2>
-
-      <p>
-        <a onClick={() => setIsOpen(!isOpen)} style={{ display: "inline-flex", alignItems: "center", gap: "0.4rem" }}>
-          <Icon name={isOpen ? "chevron-down" : "chevron-right"} />
-          <FormattedMessage
-            id="settings.description.short"
-            defaultMessage="Language, theme, and other preferences"
-            description="Short description of settings"
-          />
-        </a>
-      </p>
 
       {isOpen && (
         <div>

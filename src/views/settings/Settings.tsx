@@ -131,7 +131,7 @@ const Settings: React.FC = () => {
         <Background />
         <Widgets />
         <System />
-        <p style={{ marginTop: "1.25rem", marginBottom: "2rem" }}>
+        <p style={{ marginTop: "3rem", marginBottom: "2rem" }}>
           <a onClick={handleImport}>
             <FormattedMessage
               id="settings.import"
@@ -199,6 +199,7 @@ const Settings: React.FC = () => {
             TablissNG v{VERSION} {DEV ? "DEV " : ""}
           </span>
         </div>
+        <div style={{ height: "2rem" }} />
       </div>
     </div>
   );
