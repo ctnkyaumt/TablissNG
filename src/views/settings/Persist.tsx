@@ -3,20 +3,31 @@ import { FormattedMessage } from "react-intl";
 
 const Persist: React.FC = () => {
   const [error, setError] = React.useState(false);
-  const [persisted, setPersisted] = React.useState(true); // Hide until we know otherwise
+  const [persisted, setPersisted] = React.useState(true);
+  const [busy, setBusy] = React.useState(false);
 
   React.useEffect(() => {
     if (navigator.storage) navigator.storage.persisted().then(setPersisted);
   }, []);
 
-  if (persisted) return null;
+  if (BUILD_TARGET !== "web" || persisted) return null;
 
-  const handleClick = () => {
-    navigator.storage
-      .persist()
-      .then((persisted) =>
-        persisted ? setPersisted(persisted) : setError(true),
-      );
+  const handleClick = async () => {
+    setError(false);
+    if (!navigator.storage || !("persist" in navigator.storage)) {
+      setError(true);
+      return;
+    }
+    try {
+      setBusy(true);
+      const granted = await navigator.storage.persist();
+      if (granted) setPersisted(true);
+      else setError(true);
+    } catch (_) {
+      setError(true);
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -42,7 +53,7 @@ const Persist: React.FC = () => {
         description="Persist Settings error"
       /></p>
       ) : (
-        <button className="button button--primary" onClick={handleClick}>
+        <button className="button button--primary" onClick={handleClick} disabled={busy}>
           <FormattedMessage
           id="settings.persist.button"
           defaultMessage="Persist Settings"

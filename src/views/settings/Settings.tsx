@@ -131,7 +131,7 @@ const Settings: React.FC = () => {
         <Background />
         <Widgets />
         <System />
-        <p style={{ marginBottom: "2rem" }}>
+        <p style={{ marginTop: "1.25rem", marginBottom: "2rem" }}>
           <a onClick={handleImport}>
             <FormattedMessage
               id="settings.import"
