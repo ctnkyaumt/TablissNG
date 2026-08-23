@@ -1,0 +1,75 @@
+﻿name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Git ref (tag/branch) to build from"
+        required: false
+        type: string
+        default: "main"
+
+jobs:
+  build:
+    uses: ./.github/workflows/_build.yml
+    with:
+      ref: ${{ inputs.ref }}
+    secrets: inherit
+
+  create-release:
+    needs: [build]
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref }}
+          fetch-depth: 0
+
+      - uses: actions/download-artifact@v7
+        with:
+          path: artifacts
+
+      - name: Create ZIP files
+        run: |
+          cd artifacts/tabliss-firefox
+          zip -r ../../tabliss-firefox.zip ./*
+          cd ../tabliss-chromium
+          zip -r ../../tabliss-chromium.zip ./*
+          cd ../tabliss-web
+          zip -r ../../tabliss-web.zip ./*
+          cd ../tabliss-safari
+          zip -r ../../tabliss-safari.zip ./*
+          cd ../..
+
+      - name: Get version without v prefix
+        id: version
+        run: |
+          REF="${{ inputs.ref }}"
+          if [ -z "$REF" ]; then
+            REF="${{ github.ref_name }}"
+          fi
+          VERSION=${REF#v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "ref=$REF" >> $GITHUB_OUTPUT
+
+      - name: Create Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Version ${{ steps.version.outputs.version }}
+          tag_name: ${{ steps.version.outputs.ref }}
+          files: |
+            tabliss-chromium.zip
+            tabliss-firefox.zip
+            tabliss-web.zip
+            tabliss-safari.zip
+          draft: false
+          prerelease: false
+          generate_release_notes: true

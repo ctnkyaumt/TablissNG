@@ -1,65 +1,129 @@
-import React from "react";
-import { FormattedMessage } from "react-intl";
+import { type FC, useEffect, useState } from "react";
+import { defineMessages, FormattedMessage, useIntl } from "react-intl";
 
-const Persist: React.FC = () => {
-  const [error, setError] = React.useState(false);
-  const [persisted, setPersisted] = React.useState(true);
-  const [busy, setBusy] = React.useState(false);
+const messages = defineMessages({
+  storageUnavailable: {
+    id: "settings.persist.error.storageUnavailable",
+    defaultMessage: "Storage persistence API not available in this browser.",
+    description: "Shown when the Storage Persistence API isn't present",
+  },
+  denied: {
+    id: "settings.persist.error.denied",
+    defaultMessage: "Browser denied persistent storage.",
+    description: "Shown when the browser refuses persistent storage",
+  },
+  unknownError: {
+    id: "settings.persist.error.unknown",
+    defaultMessage: "An error occurred: {details}",
+    description: "Generic error wrapper for unexpected exceptions",
+  },
+});
 
-  React.useEffect(() => {
-    if (navigator.storage) navigator.storage.persisted().then(setPersisted);
+const Persist: FC = () => {
+  const intl = useIntl();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [persisted, setPersisted] = useState<boolean | null>(true);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const check = async () => {
+      try {
+        if (!navigator.storage || !navigator.storage.persisted) {
+          setErrorMessage(intl.formatMessage(messages.storageUnavailable));
+          setPersisted(false);
+          return;
+        }
+        setPersisted(await navigator.storage.persisted());
+      } catch (e) {
+        setErrorMessage(e instanceof Error ? e.message : String(e));
+        setPersisted(false);
+      }
+    };
+    check();
   }, []);
 
-  if (BUILD_TARGET !== "web" || persisted) return null;
-
   const handleClick = async () => {
-    setError(false);
-    if (!navigator.storage || !("persist" in navigator.storage)) {
-      setError(true);
-      return;
-    }
+    setLoading(true);
+    setErrorMessage(null);
     try {
-      setBusy(true);
+      if (!navigator.storage || !navigator.storage.persist) {
+        setErrorMessage(intl.formatMessage(messages.storageUnavailable));
+        return;
+      }
       const granted = await navigator.storage.persist();
-      if (granted) setPersisted(true);
-      else setError(true);
-    } catch (_) {
-      setError(true);
+      if (granted) {
+        // Immediately mark persisted
+        setPersisted(true);
+      } else {
+        setErrorMessage(intl.formatMessage(messages.denied));
+      }
+    } catch (e: unknown) {
+      setErrorMessage(e instanceof Error ? e.message : String(e));
     } finally {
-      setBusy(false);
+      setLoading(false);
     }
   };
 
   return (
     <div className="Widget" style={{ textAlign: "center" }}>
-      <h4><FormattedMessage
+      <h4>
+        <FormattedMessage
           id="settings.persist.title"
           defaultMessage="Persist Settings"
           description="Persist Settings title"
-        /></h4>
+        />
+      </h4>
       <p>
-      <FormattedMessage
+        <FormattedMessage
           id="settings.persist.description"
-          defaultMessage="Would you like Tabliss to ask your browser to save your setting
-          permanently?"
+          defaultMessage="Would you like Tabliss to ask your browser to save your settings permanently?"
           description="Persist Settings description"
         />
-        
       </p>
-      {error ? (
-        <p><FormattedMessage
-        id="settings.persist.error"
-        defaultMessage="Could not persist settings at this time."
-        description="Persist Settings error"
-      /></p>
-      ) : (
-        <button className="button button--primary" onClick={handleClick} disabled={busy}>
+
+      {persisted === true ? (
+        <p className="info">
           <FormattedMessage
-          id="settings.persist.button"
-          defaultMessage="Persist Settings"
-          description="Persist Settings button"
-        />
-        </button>
+            id="settings.persist.persisted"
+            defaultMessage="Settings are persisted"
+            description="Message shown when settings are persisted"
+          />
+        </p>
+      ) : (
+        <>
+          <button
+            className="button button--primary"
+            onClick={handleClick}
+            disabled={loading}
+          >
+            {loading ? (
+              <FormattedMessage
+                id="settings.persist.persisting"
+                defaultMessage="Persisting…"
+                description="Button text shown while requesting persistent storage"
+              />
+            ) : (
+              <FormattedMessage
+                id="settings.persist.button"
+                defaultMessage="Persist Settings"
+                description="Persist Settings button"
+              />
+            )}
+          </button>
+
+          {errorMessage ? (
+            <div>
+              <p>
+                <FormattedMessage
+                  id="settings.persist.error"
+                  defaultMessage="Could not persist settings at this time."
+                  description="Persist Settings error"
+                />
+              </p>
+              <p className="info">{errorMessage}</p>
+            </div>
+          ) : null}
+        </>
       )}
     </div>
   );

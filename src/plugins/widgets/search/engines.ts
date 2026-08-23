@@ -88,6 +88,11 @@ export const engines: Engine[] = [
     search_url: "https://phind.com/search?q={searchTerms}",
   },
   {
+    key: "perplexity",
+    name: "Perplexity",
+    search_url: "https://www.perplexity.ai/search?q={searchTerms}",
+  },
+  {
     key: "vuhuv",
     name: "Vuhuv",
     search_url: "https://vuhuv.com/?k=1&p=1&d=1&q={searchTerms}",
@@ -106,11 +111,12 @@ export const engines: Engine[] = [
     key: "wikipedia",
     name: "Wikipedia",
     search_url: "https://wikipedia.org/w/index.php?search={searchTerms}",
-    suggest_url: "https://en.wikipedia.org/w/rest.php/v1/search/title?q={searchTerms}&limit=10"
+    suggest_url:
+      "https://en.wikipedia.org/w/rest.php/v1/search/title?q={searchTerms}&limit=10",
   },
-    {
+  {
     key: "seznam",
     name: "Seznam",
     search_url: "https://search.seznam.cz/?q={searchTerms}",
-  }
+  },
 ];

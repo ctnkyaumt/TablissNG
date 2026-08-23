@@ -1,26 +1,99 @@
-import React, { useState, useEffect } from "react";
-import { FormattedMessage, useIntl } from "react-intl";
+import "./Settings.sass";
+
+import { Icon } from "@iconify/react";
+import { useEffect, useRef, useState } from "react";
+import { type FC, memo, useContext, useMemo } from "react";
+import GitHubButton from "react-github-btn";
+import { defineMessages, FormattedMessage, useIntl } from "react-intl";
+
 import { UiContext } from "../../contexts/ui";
 import { exportStore, importStore, resetStore } from "../../db/action";
-import { useKeyPress } from "../../hooks";
-import { Icon } from "@iconify/react";
+import { db } from "../../db/state";
+import { useClipboard, useKeyPress } from "../../hooks";
+import { useTheme } from "../../hooks";
+import { useKey } from "../../lib/db/react";
 import Logo from "../shared/Logo";
 import Background from "./Background";
 import Persist from "./Persist";
-import "./Settings.sass";
 import System from "./System";
 import Widgets from "./Widgets";
-import { db } from "../../db/state";
-import { useKey } from "../../lib/db/react";
-import { useTheme } from "../../hooks";
 
-const Settings: React.FC = () => {
-  const { toggleSettings } = React.useContext(UiContext);
+const messages = defineMessages({
+  scrollToTop: {
+    id: "settings.scrollToTop",
+    defaultMessage: "Scroll to top",
+    description: "Tooltip for scroll to top button",
+  },
+  resetConfirm: {
+    id: "settings.reset.confirm",
+    defaultMessage:
+      "Are you sure you want to delete all of your TablissNG settings? This cannot be undone.",
+    description: "Confirmation message when resetting settings",
+  },
+  ariaRepo: {
+    id: "settings.aria.repository",
+    defaultMessage: "Open repository BookCatKid/tablissNG on GitHub",
+    description: "ARIA label for the GitHub repository link",
+  },
+  ariaWatch: {
+    id: "settings.aria.watch",
+    defaultMessage: "Watch BookCatKid/tablissNG on GitHub",
+    description: "ARIA label for the GitHub watch button",
+  },
+  ariaStar: {
+    id: "settings.aria.star",
+    defaultMessage: "Star BookCatKid/tablissNG on GitHub",
+    description: "ARIA label for the GitHub star button",
+  },
+  settingsImportExportReset: {
+    id: "settings.importExportReset",
+    defaultMessage:
+      "<import>Import</import>, <export>export</export> or <reset>reset</reset> your settings",
+    description:
+      "Links for import/export/reset at the bottom of settings. Uses XML-like tags to style each action word as a clickable link.",
+  },
+  settingsStartupUrlTitle: {
+    id: "settings.startupUrl.title",
+    defaultMessage: "Startup Page URL",
+    description: "Title for the startup page URL section",
+  },
+  settingsStartupUrlDescription: {
+    id: "settings.startupUrl.description",
+    defaultMessage:
+      "For browsers like Vivaldi, copy this URL to set TablissNG as your startup page. <link>Learn more</link>.",
+    description:
+      "Description for the startup page URL section. The <link> tag wraps a clickable link to the docs.",
+  },
+  copyTooltip: {
+    id: "settings.startupUrl.copyTooltip",
+    defaultMessage: "Copy URL to clipboard",
+    description: "Tooltip for the copy URL button",
+  },
+  copySuccess: {
+    id: "settings.startupUrl.copySuccess",
+    defaultMessage: "Copied!",
+    description:
+      "Toast or indicator text shown after successfully copying the URL",
+  },
+  copyButton: {
+    id: "settings.startupUrl.copyButton",
+    defaultMessage: "Copy",
+    description: "Label for the copy URL button",
+  },
+});
+
+const Settings: FC = () => {
+  const { toggleSettings } = useContext(UiContext);
   const [settingsIconPosition] = useKey(db, "settingsIconPosition");
   const [autoHideSettings] = useKey(db, "autoHideSettings");
   const { isDark } = useTheme();
   const intl = useIntl();
   const [isHovered, setIsHovered] = useState(true);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const planeRef = useRef<HTMLDivElement>(null);
+  const { copy, copied } = useClipboard();
+
+  const startupUrl = window.location.origin + window.location.pathname;
 
   const settingsOnRight =
     settingsIconPosition === "bottomRight" ||
@@ -30,17 +103,20 @@ const Settings: React.FC = () => {
     setIsHovered(true);
   }, [toggleSettings]);
 
+  const handleScroll = () => {
+    if (planeRef.current) {
+      setShowScrollTop(planeRef.current.scrollTop > 200);
+    }
+  };
+
+  const scrollToTop = () => {
+    if (planeRef.current) {
+      planeRef.current.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
   const handleReset = () => {
-    if (
-      confirm(
-        intl.formatMessage({
-          id: "settings.reset.confirm",
-          defaultMessage: "Are you sure you want to delete all of your TablissNG settings? This cannot be undone.",
-          description: "Confirmation message when resetting settings"
-        })
-      )
-    )
-      resetStore();
+    if (confirm(intl.formatMessage(messages.resetConfirm))) resetStore();
   };
 
   const handleExport = () => {
@@ -100,21 +176,24 @@ const Settings: React.FC = () => {
         <div
           className="settings-hover-area"
           style={{
-            position: 'absolute',
+            position: "absolute",
             top: 0,
             bottom: 0,
-            width: '330px',
-            left: settingsOnRight ? 'auto' : 0,
-            right: settingsOnRight ? 0 : 'auto',
+            width: "330px",
+            left: settingsOnRight ? "auto" : 0,
+            right: settingsOnRight ? 0 : "auto",
             borderRadius: settingsOnRight ? "1rem 0 0 1rem" : "0 1rem 1rem 0",
-            background: isDark ? 'rgba(45, 45, 45, 0.25)' : 'rgba(0, 0, 0, 0.25)',
-            transition: 'background 0.3s ease'
+            background: isDark
+              ? "rgba(45, 45, 45, 0.25)"
+              : "rgba(0, 0, 0, 0.25)",
+            transition: "background 0.3s ease",
           }}
           onMouseEnter={() => setIsHovered(true)}
         />
       )}
 
       <div
+        ref={planeRef}
         className="plane"
         style={{
           left: settingsOnRight ? "auto" : 0,
@@ -122,60 +201,17 @@ const Settings: React.FC = () => {
           borderRadius: settingsOnRight ? "1rem 0 0 1rem" : "0 1rem 1rem 0",
           opacity: !autoHideSettings || isHovered ? 1 : 0,
           visibility: !autoHideSettings || isHovered ? "visible" : "hidden",
-          transition: "opacity 0.3s ease, visibility 0.3s ease"
+          transition: "opacity 0.3s ease, visibility 0.3s ease",
         }}
         onMouseEnter={() => setIsHovered(true)}
+        onScroll={handleScroll}
         onMouseLeave={() => setIsHovered(false)}
       >
         <Logo />
-        <Background />
-        <Widgets />
-        <System />
-        <p style={{ marginTop: "3rem", marginBottom: "2rem" }}>
-          <a onClick={handleImport}>
-            <FormattedMessage
-              id="settings.import"
-              defaultMessage="Import"
-              description="Import title"
-            />
-          </a>
-          ,{" "}
-          <a onClick={handleExport}>
-            <FormattedMessage
-              id="settings.export"
-              defaultMessage="export"
-              description="Export title"
-            />
-          </a>{" "}
-          <FormattedMessage
-            id="settings.or"
-            defaultMessage="or"
-            description="your settings title"
-          />{" "}
-          <a onClick={handleReset}>
-            <FormattedMessage
-              id="settings.reset"
-              defaultMessage="reset"
-              description="Reset title"
-            />
-          </a>{" "}
-          <FormattedMessage
-            id="settings.description"
-            defaultMessage="your settings"
-            description="your settings title"
-          />
-        </p>
-        <Persist />
-        <FormattedMessage
-          id="settings.translationCredits"
-          description="Give yourself some credit :)"
-          defaultMessage=" "
-          tagName="p"
-        />
         <div
           style={{
             textAlign: "center",
-            marginTop: "2rem",
+            margin: "-0.5rem 0 1rem",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -184,11 +220,11 @@ const Settings: React.FC = () => {
         >
           <span
             style={{
-              background: isDark ? "#2d2d2d" : "#f0f0f0",
+              background: "var(--bg-input)",
               padding: "0.3rem 0.8rem",
               borderRadius: "1rem",
               fontSize: "0.9rem",
-              color: isDark ? "#e0e0e0" : "#666",
+              color: "var(--text-main)",
               fontWeight: 500,
               display: "inline-flex",
               alignItems: "center",
@@ -199,10 +235,189 @@ const Settings: React.FC = () => {
             TablissNG v{VERSION} {DEV ? "DEV " : ""}
           </span>
         </div>
+        <Background />
+        <Widgets />
+        <System />
+        <p style={{ marginBottom: "2rem" }}>
+          <FormattedMessage
+            {...messages.settingsImportExportReset}
+            values={{
+              import: (chunks) => <a onClick={handleImport}>{chunks}</a>,
+              export: (chunks) => <a onClick={handleExport}>{chunks}</a>,
+              reset: (chunks) => <a onClick={handleReset}>{chunks}</a>,
+            }}
+          />
+        </p>
+        {/* Only relevant for the web build where IndexedDB may be evicted. Hide for extension builds to avoid confusing prompts in Firefox/Chromium. */}
+        {BUILD_TARGET === "web" && <Persist />}
+
+        {BUILD_TARGET !== "web" && (
+          <div className="Widget" style={{ textAlign: "center" }}>
+            <h4>
+              <FormattedMessage {...messages.settingsStartupUrlTitle} />
+            </h4>
+            <p>
+              <FormattedMessage
+                {...messages.settingsStartupUrlDescription}
+                values={{
+                  link: (chunks) => (
+                    <a
+                      href="https://tablissng.smrff.dev/support/vivaldi-startup"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {chunks}
+                    </a>
+                  ),
+                }}
+              />
+            </p>
+            <input
+              type="text"
+              readOnly
+              value={startupUrl}
+              style={{ textAlign: "left", marginTop: "0.75rem" }}
+              onClick={(e) => (e.target as HTMLInputElement).select()}
+            />
+            <button
+              onClick={() => copy(startupUrl)}
+              className="button button--primary"
+              style={{ marginTop: "0.5rem" }}
+              title={intl.formatMessage(
+                copied ? messages.copySuccess : messages.copyTooltip,
+              )}
+              aria-label={intl.formatMessage(
+                copied ? messages.copySuccess : messages.copyTooltip,
+              )}
+            >
+              <Icon
+                icon={copied ? "feather:check" : "feather:copy"}
+                style={{ marginRight: "0.3rem" }}
+              />
+              {copied ? (
+                <FormattedMessage {...messages.copySuccess} />
+              ) : (
+                <FormattedMessage {...messages.copyButton} />
+              )}
+            </button>
+          </div>
+        )}
+
+        <div style={{ textAlign: "center" }} className="Widget">
+          <h4>
+            <FormattedMessage
+              id="support"
+              defaultMessage="Support TablissNG"
+              description="Support TablissNG button text"
+            />
+          </h4>
+
+          {useMemo(
+            () => (
+              <div
+                style={{
+                  marginTop: "14px",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "14px",
+                  width: "100%",
+                }}
+              >
+                <div style={{ width: "100%" }}>
+                  <GitHubButton
+                    href="https://github.com/ctnkyaumt/TablissNG"
+                    data-icon="octicon-repo"
+                    data-size="large"
+                    data-show-count="false"
+                    data-color-scheme={isDark ? "dark" : "light"}
+                    aria-label={intl.formatMessage(messages.ariaRepo)}
+                  >
+                    <span
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "0.4rem",
+                        width: "100%",
+                      }}
+                    >
+                      <Icon icon="feather:code" />{" "}
+                      <FormattedMessage
+                        id="settings.support.contribute"
+                        defaultMessage="Contribute to the project!"
+                        description="Call to action to contribute to the project"
+                      />
+                    </span>
+                  </GitHubButton>
+                </div>
+
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "10px",
+                    width: "100%",
+                  }}
+                >
+                  <div style={{ flex: 1 }}>
+                    <GitHubButton
+                      href="https://github.com/ctnkyaumt/TablissNG/subscription"
+                      data-icon="octicon-eye"
+                      data-size="large"
+                      data-show-count="true"
+                      data-color-scheme={isDark ? "dark" : "light"}
+                      aria-label={intl.formatMessage(messages.ariaWatch)}
+                    >
+                      <FormattedMessage
+                        id="settings.github.watch"
+                        defaultMessage="Watch"
+                        description="GitHub Watch button text"
+                      />
+                    </GitHubButton>
+                  </div>
+
+                  <div style={{ flex: 1 }}>
+                    <GitHubButton
+                      href="https://github.com/ctnkyaumt/TablissNG"
+                      data-icon="octicon-star"
+                      data-size="large"
+                      data-show-count="true"
+                      data-color-scheme={isDark ? "dark" : "light"}
+                      aria-label={intl.formatMessage(messages.ariaStar)}
+                    >
+                      <FormattedMessage
+                        id="settings.github.star"
+                        defaultMessage="Star"
+                        description="GitHub Star button text"
+                      />
+                    </GitHubButton>
+                  </div>
+                </div>
+              </div>
+            ),
+            [isDark],
+          )}
+        </div>
+
+        <FormattedMessage
+          id="settings.translationCredits"
+          description="Give yourself some credit :)"
+          defaultMessage=" "
+          tagName="p"
+        />
         <div style={{ height: "2rem" }} />
       </div>
+
+      {showScrollTop && (
+        <button
+          className={`button button--primary scroll-to-top ${settingsOnRight ? "scroll-to-top--right" : "scroll-to-top--left"}`}
+          onClick={scrollToTop}
+          title={intl.formatMessage(messages.scrollToTop)}
+        >
+          <Icon icon="feather:arrow-up" />
+        </button>
+      )}
     </div>
   );
 };
 
-export default React.memo(Settings);
+export default memo(Settings);

@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "name": "TablissNG",
+  "version": "PLACEHOLDER",
+  "description": "A beautiful, customizable New Tab page with backgrounds and widgets. This is a maintained fork with ongoing updates in the future.",
+  "chrome_url_overrides": {
+    "newtab": "index.html"
+  },
+  "icons": {
+    "32": "icons/32.png",
+    "48": "icons/48.png",
+    "96": "icons/96.png",
+    "128": "icons/128.png"
+  },
+  "permissions": [
+    "storage"
+  ],
+  "background": {
+    "service_worker": "service-worker.js"
+  }
+}

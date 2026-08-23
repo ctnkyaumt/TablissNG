@@ -1,28 +1,49 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
-export function useObjectUrl(data?: Blob) {
-  // Separating these allows clean up + eagerly calculating the first one
-  const url = useMemo(() => (data ? URL.createObjectURL(data) : null), [data]);
+/**
+ * useObjectUrl
+ * Creates a temporary URL for a single Blob/File.
+ * Automatically cleans up when the Blob changes or component unmounts.
+ */
+export function useObjectUrl(data?: Blob | null) {
+  const [url, setUrl] = useState<string | null>(null);
 
   useEffect(() => {
-    const prev = url;
-    () => {
-      if (prev) URL.revokeObjectURL(prev);
+    if (!data) {
+      setUrl(null);
+      return;
+    }
+
+    const objectUrl = URL.createObjectURL(data);
+    setUrl(objectUrl);
+
+    return () => {
+      URL.revokeObjectURL(objectUrl);
     };
-  }, [url]);
+  }, [data]);
 
   return url;
 }
 
-export function useObjectUrls(data: Blob[]) {
+/**
+ * useObjectUrls
+ * Creates temporary URLs for an array of Blobs/Files.
+ * Cleans up all URLs automatically when the array changes or component unmounts.
+ */
+export function useObjectUrls(data: Blob[] = []) {
   const [urls, setUrls] = useState<string[]>([]);
 
   useEffect(() => {
-    setUrls(data.map(URL.createObjectURL));
+    if (!data.length) {
+      setUrls([]);
+      return;
+    }
+
+    const objectUrls = data.map(URL.createObjectURL);
+    setUrls(objectUrls);
 
     return () => {
-      urls.map(URL.revokeObjectURL);
-      setUrls([]);
+      objectUrls.forEach(URL.revokeObjectURL);
     };
   }, [data]);
 

@@ -1,4 +1,5 @@
-import React, { FC, useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
+
 import { defaultData, Props } from "./types";
 
 const CustomText: FC<Props> = ({ data = defaultData }) => {
@@ -17,7 +18,7 @@ const CustomText: FC<Props> = ({ data = defaultData }) => {
   };
 
   const updateText = () => {
-    let sep: string = data.atNewline ? "\n" : data.separator;
+    const sep: string = data.atNewline ? "\n" : data.separator;
     const texts = data.text.split(sep);
     const result = texts[unbiasedRand(texts.length)];
     setCurrentText(result);

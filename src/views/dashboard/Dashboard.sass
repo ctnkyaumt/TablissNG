@@ -11,6 +11,10 @@
     svg:not(.GitHub *)
         filter: drop-shadow(0 0 0.5rem rgba(0, 0, 0, 0.25))
 
+    .GitHub svg,
+    .Leetcode svg
+        filter: none
+
     a
         color: inherit
 
@@ -19,3 +23,39 @@
         &::placeholder
             color: inherit
             opacity: 0.5
+
+    // Offset background components and widgets when the settings icon is in the same corner
+    &.topLeft
+        .Slot.topLeft
+            top: 2rem
+
+    &.topCentre
+        .Slot.topCentre
+            top: 2rem
+
+    &.topRight
+        .Slot.topRight
+            top: 2rem
+
+    &.bottomLeft
+        .Slot.bottomLeft,
+        .Slot.bottomCentre
+            bottom: 6rem
+        .info-bar .left-info
+            transform: translateY(-3rem)
+
+    &.bottomCentre
+        .Overlay.bottomCentre
+            bottom: 2.5rem
+        .Slot.bottomCentre
+            bottom: 4.5rem
+        &:not(:has(.info-bar .controls))
+            .Overlay.bottomCentre
+                bottom: 0
+
+    &.bottomRight
+        .Slot.bottomRight,
+        .Slot.bottomCentre
+            bottom: 6rem
+        .info-bar .right-info
+            transform: translateY(-3rem)

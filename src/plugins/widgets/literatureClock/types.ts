@@ -12,6 +12,7 @@ export type Quote = {
 export type Data = {
   showBookAndAuthor: boolean;
   centerText: boolean;
+  sfw: boolean;
 };
 
 export type Cache = Quote;
@@ -21,4 +22,5 @@ export type Props = API<Data, Cache>;
 export const defaultData: Data = {
   showBookAndAuthor: true,
   centerText: false,
+  sfw: true,
 };

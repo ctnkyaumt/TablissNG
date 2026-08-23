@@ -5,6 +5,7 @@ import bitcoin from "./bitcoin";
 import bookmarks from "./bookmarks";
 import countdown from "./countdown";
 import css from "./css";
+import currencyRates from "./currencyRates";
 import customText from "./customText";
 import github from "./github";
 import greeting from "./greeting";
@@ -12,19 +13,23 @@ import html from "./html";
 import ipInfo from "./ipInfo";
 import joke from "./joke";
 import js from "./js";
+import leetcode from "./leetcode";
 import links from "./links";
 import literatureClock from "./literatureClock";
 import message from "./message";
 import notes from "./notes";
+import palette from "./palette";
 import quote from "./quote";
 import search from "./search";
 import since from "./since";
+import tallyCounter from "./tallyCounter";
 import time from "./time";
+import timeTracker from "./timeTracker";
 import todo from "./todo";
 import topSites from "./topSites";
+import trello from "./trello";
 import weather from "./weather";
 import workHours from "./workHours";
-import timeTracker from "./timeTracker";
 
 export const widgetConfigs = [
   // nba,
@@ -32,6 +37,7 @@ export const widgetConfigs = [
   bitcoin,
   countdown,
   css,
+  currencyRates,
   customText,
   github,
   greeting,
@@ -42,6 +48,7 @@ export const widgetConfigs = [
   literatureClock,
   message,
   notes,
+  palette,
   quote,
   search,
   since,
@@ -50,12 +57,15 @@ export const widgetConfigs = [
   weather,
   workHours,
   timeTracker,
+  tallyCounter,
+  leetcode,
 ];
 
 if (BUILD_TARGET === "web") {
   widgetConfigs.push(js);
 }
-if (BUILD_TARGET != "web") {
+if (BUILD_TARGET != "web" && BUILD_TARGET != "safari") {
   widgetConfigs.push(topSites);
   widgetConfigs.push(bookmarks);
+  widgetConfigs.push(trello);
 }

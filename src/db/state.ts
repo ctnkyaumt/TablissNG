@@ -19,14 +19,33 @@ export interface State {
   timeZone: string | null;
   /** Whether highlighting is enabled */
   highlightingEnabled: boolean;
-  /** Whether the settings icon is hidden */
+  /** Whether the overlay bar is hidden */
   hideSettingsIcon: boolean;
   /** Position of the settings icon */
-  settingsIconPosition: "topRight" | "topLeft" | "bottomRight" | "bottomLeft";
+  settingsIconPosition:
+    | "topRight"
+    | "topCentre"
+    | "topLeft"
+    | "bottomRight"
+    | "bottomCentre"
+    | "bottomLeft";
   /** Theme preference (light/dark/system) */
   themePreference: "light" | "dark" | "system";
   /** Whether to auto-hide settings menu when not hovering */
   autoHideSettings: boolean;
+  /** Favicon settings */
+  favicon: FaviconState;
+  /** Global accent color in hex format */
+  accent: string;
+}
+
+export type FaviconMode =
+  "default" | "size32" | "size48" | "size96" | "size128" | "custom" | "url";
+
+export interface FaviconState {
+  mode: FaviconMode;
+  url: string;
+  data: string | null;
 }
 
 export interface BackgroundState {
@@ -42,7 +61,19 @@ export interface BackgroundDisplay {
   scale?: boolean;
   nightStart?: string; // format "HH:mm" e.g. "21:00"
   nightEnd?: string; // format "HH:mm" e.g. "05:00"
+  position?: BackgroundPosition;
 }
+
+export type BackgroundPosition =
+  | "center"
+  | "top"
+  | "bottom"
+  | "left"
+  | "right"
+  | "top left"
+  | "top right"
+  | "bottom left"
+  | "bottom right";
 
 export interface WidgetState {
   id: string;
@@ -80,6 +111,10 @@ export interface WidgetDisplay {
   customClass?: string;
   timeBasedColors?: TimeBasedColor[];
   useTimeBasedColors?: boolean;
+  /** Whether to use the global accent color instead of a specific color */
+  useAccentColor?: boolean;
+  /** Whether the widget is disabled (not rendered on the dashboard) */
+  disabled?: boolean;
 }
 
 export type WidgetPosition =
@@ -106,6 +141,7 @@ const initData: State = {
       scale: true,
       nightStart: "21:00", // 9 PM
       nightEnd: "05:00", // 5 AM
+      position: "center",
     },
   },
   "widget/default-time": {
@@ -132,6 +168,12 @@ const initData: State = {
   settingsIconPosition: "topLeft",
   themePreference: "system",
   autoHideSettings: false,
+  favicon: {
+    mode: "default",
+    url: "",
+    data: null,
+  },
+  accent: "#3498db",
 };
 
 // Database storage

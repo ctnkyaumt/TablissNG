@@ -1,12 +1,24 @@
-import React from "react";
-import { useRotatingCache } from "../../../hooks";
-import Backdrop from "../../../views/shared/Backdrop";
-import { buildLink, fetchImages } from "./api";
-import { defaultData, Props } from "./types";
-import "./Unsplash.sass";
-import UnsplashCredit from "./UnsplashCredit";
+import { type FC, useEffect } from "react";
+import { FormattedMessage } from "react-intl";
 
-const Unsplash: React.FC<Props> = ({
+import { useBackgroundRotation } from "../../../hooks";
+import BaseBackground from "../base/BaseBackground";
+import { buildLink, fetchImages } from "./api";
+import { defaultData, Image as UnsplashImage, Props } from "./types";
+
+const UTM = "?utm_source=Start&utm_medium=referral&utm_campaign=api-credit";
+
+const getLocationUrl = (location: string, source: string) => {
+  const urls = {
+    "google-maps": `https://www.google.com/maps/search/?api=1&query=${location}`,
+    google: `https://www.google.com/search?tbm=isch&q=${location}`,
+    duckduckgo: `https://duckduckgo.com/?q=${location}&iax=images&ia=images`,
+    unsplash: `https://unsplash.com/s/photos/${encodeURIComponent(location.replace(/\s+/g, "-").toLowerCase())}`,
+  } as const;
+  return urls[source as keyof typeof urls] || "#";
+};
+
+const Unsplash: FC<Props> = ({
   cache,
   data = defaultData,
   loader,
@@ -20,7 +32,7 @@ const Unsplash: React.FC<Props> = ({
   }
 
   // Migrate old pause setting
-  React.useEffect(() => {
+  useEffect(() => {
     if (data.timeout === Number.MAX_SAFE_INTEGER) {
       setData({
         ...data,
@@ -30,66 +42,69 @@ const Unsplash: React.FC<Props> = ({
     }
   }, []);
 
-  // Get current item from rotating cache
-  const item = useRotatingCache(
-    () => {
-      loader.push();
-      return fetchImages(data).finally(loader.pop);
-    },
-    { cache, setCache },
-    data.paused ? Number.MAX_SAFE_INTEGER : data.timeout * 1000,
-    [data.by, data.collections, data.featured, data.search, (Array.isArray(data.topics) ? data.topics : [data.topics]).join(',')],
-  );
-
-  // Populate browser cache with the next image
-  React.useEffect(() => {
-    if (cache && cache.items[cache.cursor + 1]) {
-      const next = new Image();
-      next.src = buildLink(cache.items[cache.cursor + 1].src);
-      next.onload = loader.pop;
-      next.onerror = loader.pop;
-      loader.push();
-    }
-  }, [cache]);
+  const { item, go, handlePause } = useBackgroundRotation({
+    fetch: () => fetchImages(data),
+    cacheObj: { cache, setCache },
+    data,
+    setData,
+    loader,
+    deps: [
+      data.by,
+      data.collections,
+      data.featured,
+      data.search,
+      (Array.isArray(data.topics) ? data.topics : [data.topics]).join(","),
+    ],
+    buildUrl: (i: UnsplashImage) => buildLink(i.src),
+  });
 
   const url = item ? buildLink(item.src) : null;
 
-  const go = (amount: number) =>
-    cache && cache.items[cache.cursor + amount]
-      ? () =>
-          setCache({
-            ...cache!,
-            cursor: cache!.cursor + amount,
-            rotated: Date.now(),
-          })
+  const credits = item
+    ? [
+        {
+          label: (
+            <FormattedMessage
+              id="plugins.unsplash.photoLink"
+              description="Photo link text"
+              defaultMessage="Photo"
+            />
+          ),
+          url: item.credit.imageLink + UTM,
+        },
+        {
+          label: item.credit.userName,
+          url: item.credit.userLink + UTM,
+        },
+        {
+          label: "Unsplash",
+          url: "https://unsplash.com/" + UTM,
+        },
+      ]
+    : [];
+
+  const location =
+    item?.credit.location && data.locationSource
+      ? {
+          label: item.credit.location,
+          url: getLocationUrl(item.credit.location, data.locationSource),
+        }
       : null;
 
-  const handlePause = () => {
-    setData({
-      ...data,
-      paused: !data.paused,
-    });
-  };
-
   return (
-    <div className="Unsplash fullscreen">
-      <Backdrop
-        className="image fullscreen"
-        ready={url !== null}
-        url={url}
-      />
-
-      {item ? (
-        <UnsplashCredit
-          credit={item.credit}
-          locationSource={data.locationSource}
-          paused={data.paused ?? false}
-          onPause={handlePause}
-          onPrev={go(-1)}
-          onNext={go(1)}
-        />
-      ) : null}
-    </div>
+    <BaseBackground
+      containerClassName="Unsplash fullscreen"
+      url={url}
+      showControls={true}
+      controlsOnHover={!data.showControls}
+      showInfo={data.showTitle}
+      leftInfo={credits}
+      rightInfo={location}
+      paused={data.paused ?? false}
+      onPause={handlePause}
+      onPrev={go(-1)}
+      onNext={go(1)}
+    />
   );
 };
 

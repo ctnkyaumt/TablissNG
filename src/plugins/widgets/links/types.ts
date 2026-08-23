@@ -5,6 +5,7 @@ export type Link = {
   name?: string;
   icon?: string;
   url: string;
+  keyboardShortcut?: string;
   lastUsed?: number;
   iconSize?: number;
   IconString?: string;
@@ -17,6 +18,7 @@ export type Link = {
   // Reference to cached icon data
   iconCacheKey?: string;
   conserveAspectRatio?: boolean;
+  useExtensionTabs?: boolean;
 };
 
 export type IconCacheItem = {
@@ -56,7 +58,13 @@ export type DisplayProps = Link & {
 
 export const defaultData: Data = {
   columns: 1,
-  links: [{ id: 'default-link', url: "https://github.com/BookCatKid/TablissNG", name: "TablissNG" }],
+  links: [
+    {
+      id: "default-link",
+      url: "https://github.com/BookCatKid/TablissNG",
+      name: "TablissNG",
+    },
+  ],
   visible: true,
   linkOpenStyle: false,
   linksNumbered: false,

@@ -1,13 +1,15 @@
-import React from "react";
-import { defineMessages } from "react-intl";
+import "./Overlay.sass";
+
+import { Icon } from "@iconify/react";
+import { type FC, useContext } from "react";
+import { defineMessages, useIntl } from "react-intl";
+
 import { ErrorContext } from "../../contexts/error";
 import { UiContext } from "../../contexts/ui";
 import { toggleFocus } from "../../db/action";
 import { db } from "../../db/state";
-import { useFormatMessages, useFullscreen, useKeyPress } from "../../hooks";
-import { useValue, useKey } from "../../lib/db/react";
-import { Icon } from "@iconify/react";
-import "./Overlay.sass";
+import { useFullscreen, useKeyPress } from "../../hooks";
+import { useKey, useValue } from "../../lib/db/react";
 
 const messages = defineMessages({
   settingsHint: {
@@ -38,117 +40,100 @@ const messages = defineMessages({
   },
 });
 
-type Position = 'topLeft' | 'topRight' | 'bottomLeft' | 'bottomRight';
-
-const mapping: Record<Position, React.CSSProperties> = {
-  topLeft: {
-    top: '0',
-    bottom: 'auto',
-    left: '0',
-  },
-  topRight: {
-    top: '0',
-    right: '0',
-    left: 'auto',
-    flexDirection: 'row-reverse'
-  },
-  bottomLeft: {
-    bottom: '0',
-    top: 'auto',
-    left: '0',
-  },
-  bottomRight: {
-    bottom: '0',
-    right: '0',
-    top: 'auto',
-    left: 'auto',
-    flexDirection: 'row-reverse'
-  }
-};
-
-const Overlay: React.FC = () => {
-  const translated = useFormatMessages(messages);
+const Overlay: FC = () => {
+  const intl = useIntl();
   const focus = useValue(db, "focus");
-  const { errors } = React.useContext(ErrorContext);
-  const { pending, toggleErrors, toggleSettings } = React.useContext(UiContext);
+  const { errors } = useContext(ErrorContext);
+  const { pending, toggleErrors, toggleSettings } = useContext(UiContext);
   const [hideSettingsIcon] = useKey(db, "hideSettingsIcon");
   const [settingsIconPosition] = useKey(db, "settingsIconPosition");
 
   useKeyPress(toggleFocus, ["w"]);
   useKeyPress(toggleSettings, ["s"]);
 
-  // Hooks inside a condition? Works because the condition always resolves the same
   const [isFullscreen, handleToggleFullscreen] = useFullscreen();
-  if (handleToggleFullscreen) useKeyPress(handleToggleFullscreen, ["f"]);
+  useKeyPress(handleToggleFullscreen || null, ["f"]);
 
-  const unsplashCreditPhotoElement = document.querySelector(".credit .photo") as HTMLElement;
-  const unsplashCreditLocationElement = document.querySelector(".credit .location-wrapper") as HTMLElement;
-  const wikimediaTitleCredit = document.querySelector(".wikimedia-credit-title") as HTMLElement;
-  const wikimediaCopyrightCredit = document.querySelector(".wikimedia-credit-copyright") as HTMLElement;
-  const giphyCreditElement = document.querySelector(".credit:has(.giphy-logo)") as HTMLElement;
-  const apodCreditElement = document.querySelector(".apod-credit") as HTMLElement;
+  const isCenter =
+    settingsIconPosition === "topCentre" ||
+    settingsIconPosition === "bottomCentre";
 
-  if (unsplashCreditPhotoElement) {
-    unsplashCreditPhotoElement.style.transform = settingsIconPosition === "bottomLeft" ? "translateY(-2.5em)" : "0";
-  }
-  if (unsplashCreditLocationElement) {
-    unsplashCreditLocationElement.style.transform = settingsIconPosition === "bottomRight" ? "translateY(-2.5em)" : "0";
-  }
-  if (wikimediaTitleCredit) {
-    wikimediaTitleCredit.style.transform = settingsIconPosition === "bottomLeft" ? "translateY(-2em)" : "0";
-  }
-  if (wikimediaCopyrightCredit) {
-    wikimediaCopyrightCredit.style.transform = settingsIconPosition === "bottomRight" ? "translateY(-3em)" : "0";
-  }
-  if (giphyCreditElement) {
-    giphyCreditElement.style.transform = settingsIconPosition === "bottomLeft" ? "translateY(-2em)" : "0";
-  }
-  if (apodCreditElement) {
-    apodCreditElement.style.transform = settingsIconPosition === "bottomLeft" ? "translateY(-3em)" : "0";
+  const wrapperClass = `Overlay ${settingsIconPosition}${hideSettingsIcon ? " hidden" : ""}`;
+
+  const settingsBtn = (
+    <button
+      type="button"
+      onClick={toggleSettings}
+      title={`${intl.formatMessage(messages.settingsHint)} (S)`}
+    >
+      <Icon icon="feather:settings" />
+    </button>
+  );
+
+  const errorBtn = errors.length > 0 && (
+    <button
+      type="button"
+      onClick={toggleErrors}
+      title={intl.formatMessage(messages.errorHint)}
+    >
+      <Icon icon="feather:alert-triangle" />
+    </button>
+  );
+
+  const loadingBtn = pending > 0 && (
+    <span title={intl.formatMessage(messages.loadingHint)}>
+      <Icon icon="feather:zap" />
+    </span>
+  );
+
+  const focusBtn = (
+    <button
+      type="button"
+      className={focus ? "" : "on-hover"}
+      onClick={toggleFocus}
+      title={`${intl.formatMessage(messages.focusHint)} (W)`}
+    >
+      <Icon icon={`feather:${focus ? "eye-off" : "eye"}`} />
+    </button>
+  );
+
+  const fullscreenBtn = handleToggleFullscreen && (
+    <button
+      type="button"
+      className="on-hover"
+      onClick={handleToggleFullscreen}
+      title={`${intl.formatMessage(messages.fullscreenHint)} (F)`}
+    >
+      <Icon icon={`feather:${isFullscreen ? "minimize-2" : "maximize-2"}`} />
+    </button>
+  );
+
+  if (isCenter) {
+    return (
+      <div className={wrapperClass}>
+        <div className="Overlay__group Overlay__group--side Overlay__group--left">
+          {fullscreenBtn}
+        </div>
+        <div className="Overlay__group Overlay__group--center">
+          {settingsBtn}
+          {errorBtn}
+          {loadingBtn}
+          {focus && focusBtn}
+        </div>
+        <div className="Overlay__group Overlay__group--side Overlay__group--right">
+          {!focus && focusBtn}
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div 
-      className={`Overlay ${settingsIconPosition}`} 
-      style={mapping[settingsIconPosition as Position] || mapping.topLeft}
-    >
-      <a 
-        onClick={toggleSettings} 
-        title={`${translated.settingsHint} (S)`}
-        className={hideSettingsIcon ? "on-hover" : ""}
-      >
-        <Icon icon="feather:settings" />
-      </a>
-
-      {errors.length > 0 ? (
-        <a onClick={toggleErrors} title={translated.errorHint}>
-          <Icon icon="feather:alert-triangle" />
-        </a>
-      ) : null}
-
-      {pending > 0 ? (
-        <span title={translated.loadingHint}>
-          <Icon icon="feather:zap" />
-        </span>
-      ) : null}
-
-      <a
-        className={focus ? "" : "on-hover"}
-        onClick={toggleFocus}
-        title={`${translated.focusHint} (W)`}
-      >
-        <Icon icon={`feather:${focus ? "eye-off" : "eye"}`} />
-      </a>
-
-      {handleToggleFullscreen ? (
-        <a
-          className="on-hover"
-          onClick={handleToggleFullscreen}
-          title={`${translated.fullscreenHint} (F)`}
-        >
-          <Icon icon={`feather:${isFullscreen ? "minimize-2" : "maximize-2"}`} />
-        </a>
-      ) : null}
+    <div className={wrapperClass}>
+      {settingsBtn}
+      {errorBtn}
+      {loadingBtn}
+      {focusBtn}
+      {fullscreenBtn}
     </div>
   );
 };
