@@ -40,11 +40,17 @@ jobs:
           UNSPLASH_API_KEY: ${{ secrets.UNSPLASH_API_KEY }}
           NASA_API_KEY: ${{ secrets.NASA_API_KEY }}
 
-      - name: Upload artifact
+      - name: Package extension
+        run: |
+          cd dist/${{ matrix.build_target }}
+          zip -r ../../tabliss-${{ matrix.build_target }}.zip ./*
+          cd ../..
+
+      - name: Upload zip artifact
         uses: actions/upload-artifact@v4
         with:
-          name: tabliss-${{ matrix.build_target }}
-          path: dist/${{ matrix.build_target }}
+          name: tabliss-${{ matrix.build_target }}-zip
+          path: tabliss-${{ matrix.build_target }}.zip
 
   create-release:
     needs: [build]
@@ -60,29 +66,38 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          path: artifacts
+          pattern: tabliss-*-zip
+          merge-multiple: true
 
-      - name: Get version without v prefix
+      - name: Determine release tag
         id: version
         run: |
           REF="${{ inputs.ref }}"
-          if [ -z "$REF" ]; then
+          if [ -z "$REF" ] || [ "$REF" = "main" ]; then
             REF="${{ github.ref_name }}"
           fi
-          VERSION=${REF#v}
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "ref=$REF" >> $GITHUB_OUTPUT
+          if [ "$REF" = "main" ] || [ -z "$REF" ]; then
+            PKG_VERSION=$(node -p "require('./package.json').version")
+            TAG_NAME="v$PKG_VERSION"
+            RELEASE_NAME="Version $PKG_VERSION"
+          else
+            TAG_NAME="$REF"
+            VERSION=${REF#v}
+            RELEASE_NAME="Version $VERSION"
+          fi
+          echo "tag_name=$TAG_NAME" >> $GITHUB_OUTPUT
+          echo "release_name=$RELEASE_NAME" >> $GITHUB_OUTPUT
 
       - name: Create Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         uses: softprops/action-gh-release@v2
         with:
-          name: Version ${{ steps.version.outputs.version }}
-          tag_name: ${{ steps.version.outputs.ref }}
+          name: ${{ steps.version.outputs.release_name }}
+          tag_name: ${{ steps.version.outputs.tag_name }}
           files: |
-            artifacts/tabliss-chromium/**/*
-            artifacts/tabliss-firefox/**/*
+            tabliss-chromium.zip
+            tabliss-firefox.zip
           draft: false
           prerelease: false
           generate_release_notes: true
