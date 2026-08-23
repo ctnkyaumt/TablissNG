@@ -1,4 +1,4 @@
-name: Release
+﻿name: Release
 
 on:
   push:
@@ -14,10 +14,37 @@ on:
 
 jobs:
   build:
-    uses: ./.github/workflows/_build.yml
-    with:
-      ref: ${{ inputs.ref }}
-    secrets: inherit
+    name: Build ${{ matrix.build_target }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        build_target:
+          - chromium
+          - firefox
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --prefer-offline
+
+      - name: Build ${{ matrix.build_target }}
+        run: pnpm run build:${{ matrix.build_target }}
+        env:
+          GIPHY_API_KEY: ${{ secrets.GIPHY_API_KEY }}
+          UNSPLASH_API_KEY: ${{ secrets.UNSPLASH_API_KEY }}
+          NASA_API_KEY: ${{ secrets.NASA_API_KEY }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tabliss-${{ matrix.build_target }}
+          path: dist/${{ matrix.build_target }}
 
   create-release:
     needs: [build]
@@ -26,12 +53,12 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
         with:
           ref: ${{ inputs.ref }}
           fetch-depth: 0
 
-      - uses: actions/download-artifact@v7
+      - uses: actions/download-artifact@v4
         with:
           path: artifacts
 
@@ -59,4 +86,3 @@ jobs:
           draft: false
           prerelease: false
           generate_release_notes: true
-
