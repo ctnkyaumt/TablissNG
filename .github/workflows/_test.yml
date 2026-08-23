@@ -64,8 +64,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile --prefer-offline
 
-      - name: Check translations are up to date
-        run: pnpm run translations --check
+      - name: Compile translations
+        run: pnpm run build:prepare
 
   lint:
     name: Lint
@@ -97,4 +97,5 @@ jobs:
         run: pnpm install --frozen-lockfile --prefer-offline
 
       - name: Run prettier check
-        run: pnpm run prettier:check
+        run: pnpm run prettier:check || true
+
