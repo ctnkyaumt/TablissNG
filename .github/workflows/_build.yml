@@ -23,8 +23,6 @@ jobs:
         build_target:
           - chromium
           - firefox
-          - web
-          - safari
     steps:
       - uses: actions/checkout@v6
         with:
@@ -51,27 +49,3 @@ jobs:
           name: tabliss-${{ matrix.build_target }}${{ inputs.artifact_suffix }}
           path: dist/${{ matrix.build_target }}
 
-  build_docs:
-    name: Build Documentation
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          ref: ${{ inputs.ref }}
-      - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 24
-          cache: pnpm
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile --prefer-offline
-
-      - name: Build
-        run: pnpm run build
-        working-directory: docs
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v7
-        with:
-          name: tabliss-docs${{ inputs.artifact_suffix }}
-          path: docs/build

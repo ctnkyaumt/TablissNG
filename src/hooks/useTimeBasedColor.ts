@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+
 import { TimeBasedColor } from "../db/state";
 
 // Convert time string "HH:mm" to minutes since midnight

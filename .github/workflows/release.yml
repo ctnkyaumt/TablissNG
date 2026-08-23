@@ -1,4 +1,4 @@
-﻿name: Release
+name: Release
 
 on:
   push:
@@ -35,18 +35,6 @@ jobs:
         with:
           path: artifacts
 
-      - name: Create ZIP files
-        run: |
-          cd artifacts/tabliss-firefox
-          zip -r ../../tabliss-firefox.zip ./*
-          cd ../tabliss-chromium
-          zip -r ../../tabliss-chromium.zip ./*
-          cd ../tabliss-web
-          zip -r ../../tabliss-web.zip ./*
-          cd ../tabliss-safari
-          zip -r ../../tabliss-safari.zip ./*
-          cd ../..
-
       - name: Get version without v prefix
         id: version
         run: |
@@ -66,10 +54,9 @@ jobs:
           name: Version ${{ steps.version.outputs.version }}
           tag_name: ${{ steps.version.outputs.ref }}
           files: |
-            tabliss-chromium.zip
-            tabliss-firefox.zip
-            tabliss-web.zip
-            tabliss-safari.zip
+            artifacts/tabliss-chromium/**/*
+            artifacts/tabliss-firefox/**/*
           draft: false
           prerelease: false
           generate_release_notes: true
+
