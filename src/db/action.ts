@@ -189,9 +189,11 @@ export const importStore = (dump: any): void => {
   const finalState = { ...defaults, ...dump };
 
   // Restore keys into db
+  // @ts-ignore
   Object.entries(finalState).forEach(([key, val]) => {
     if (val !== undefined) {
-      DB.put(db, key as any, val);
+      // @ts-ignore
+      DB.put(db, key as any, val as any);
     }
   });
 };
