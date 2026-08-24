@@ -37,6 +37,8 @@ export interface State {
   favicon: FaviconState;
   /** Global accent color in hex format */
   accent: string;
+  /** Global font preference */
+  font?: string;
 }
 
 export type FaviconMode =
@@ -174,6 +176,7 @@ const initData: State = {
     data: null,
   },
   accent: "#3498db",
+  font: "",
 };
 
 // Database storage

@@ -3,6 +3,7 @@ import { useState } from "react";
 import { defineMessages, FormattedMessage, useIntl } from "react-intl";
 
 import { db, FaviconMode } from "../../db/state";
+import { useSystemFonts } from "../../hooks";
 import { useKey } from "../../lib/db/react";
 import { localeOptions } from "../../locales/registry";
 import { Icon, IconButton } from "../shared";
@@ -72,6 +73,8 @@ const System: FC = () => {
   );
   const [favicon, setFavicon] = useKey(db, "favicon");
   const [accent, setAccent] = useKey(db, "accent");
+  const [font, setFont] = useKey(db, "font");
+  const systemFonts = useSystemFonts();
 
   return (
     <div style={{ marginBottom: "2rem" }}>
@@ -157,6 +160,37 @@ const System: FC = () => {
               description="System theme option"
             />
           </option>
+        </select>
+      </label>
+
+      <label className="u-grid-2col-wide">
+        <span>
+          <FormattedMessage
+            id="settings.font"
+            defaultMessage="Font"
+            description="Font selection label"
+          />
+        </span>
+        <select
+          value={font || ""}
+          onChange={(e) => setFont(e.target.value)}
+        >
+          <option value="">
+            <FormattedMessage
+              id="settings.font.default"
+              defaultMessage="Default"
+              description="Default font option"
+            />
+          </option>
+          {systemFonts.map((fontName) => (
+            <option
+              key={fontName}
+              value={fontName}
+              style={{ fontFamily: fontName }}
+            >
+              {fontName}
+            </option>
+          ))}
         </select>
       </label>
 

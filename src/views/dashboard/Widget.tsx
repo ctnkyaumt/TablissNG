@@ -52,6 +52,7 @@ const Widget: FC<WidgetProps> = ({
 }) => {
   const widgetRef = useRef<HTMLDivElement>(null);
   const [accent] = useKey(db, "accent") || ["#3498db"];
+  const [globalFont] = useKey(db, "font") || [""];
   const timeBasedColor = useTimeBasedColor(timeBasedColors, useTimeBasedColors);
 
   // Calculate pixel position from percentage
@@ -116,7 +117,8 @@ const Widget: FC<WidgetProps> = ({
     };
   }, [position, getPixelPosition]);
 
-  const parsedFont = parseFontFamilyAndFeatures(fontFamily || "");
+  const effectiveFont = fontFamily || globalFont || "";
+  const parsedFont = parseFontFamilyAndFeatures(effectiveFont);
 
   // Handle transform updates from MoveableWrapper
   const handleTransformEnd = useCallback(
@@ -177,7 +179,7 @@ const Widget: FC<WidgetProps> = ({
   const styles: CSSProperties = {
     position: position === "free" ? "absolute" : "relative",
     color: timeBasedColor || (useAccentColor ? accent : colour),
-    fontFamily: parsedFont.family || fontFamily,
+    fontFamily: parsedFont.family || effectiveFont || undefined,
     fontSize: `${fontSize}px`,
     fontWeight,
     fontStyle,

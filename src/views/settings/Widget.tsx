@@ -5,7 +5,7 @@ import { defineMessages, FormattedMessage, useIntl } from "react-intl";
 
 import { setWidgetDisplay } from "../../db/action";
 import { WidgetState } from "../../db/state";
-import { useToggle } from "../../hooks";
+import { useSystemFonts, useToggle } from "../../hooks";
 import { sectionMessages } from "../../locales/messages";
 import { getConfig } from "../../plugins";
 import { DownIcon, Icon, IconButton, RemoveIcon, UpIcon } from "../shared";
@@ -52,6 +52,7 @@ interface Props {
 const Widget: FC<Props> = ({ plugin, onMoveDown, onMoveUp, onRemove }) => {
   const [isOpen, toggleIsOpen] = useToggle(onRemove === undefined);
   const intl = useIntl();
+  const systemFonts = useSystemFonts();
 
   const { defaultData, description, name, settingsComponent } = getConfig(
     plugin.key,
@@ -138,13 +139,31 @@ const Widget: FC<Props> = ({ plugin, onMoveDown, onMoveUp, onRemove }) => {
                   description="Font title"
                 />{" "}
                 <br />
-                <input
-                  type="text"
-                  value={plugin.display.fontFamily}
+                <select
+                  value={plugin.display.fontFamily || ""}
                   onChange={(event) =>
-                    setDisplay({ fontFamily: event.target.value })
+                    setDisplay({
+                      fontFamily: event.target.value || undefined,
+                    })
                   }
-                />
+                >
+                  <option value="">
+                    <FormattedMessage
+                      id="settings.font.default"
+                      defaultMessage="Default"
+                      description="Default weight font"
+                    />
+                  </option>
+                  {systemFonts.map((fontName) => (
+                    <option
+                      key={fontName}
+                      value={fontName}
+                      style={{ fontFamily: fontName }}
+                    >
+                      {fontName}
+                    </option>
+                  ))}
+                </select>
               </label>
 
               <label>

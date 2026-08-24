@@ -1,9 +1,10 @@
 import { nanoid } from "nanoid";
 
 import { DB } from "../lib";
+import migrateFrom1 from "./migrations/migrate1";
 import migrateFrom2 from "./migrations/migrate2";
 import { selectWidgets } from "./select";
-import { BackgroundDisplay, cache, db, WidgetDisplay } from "./state";
+import { BackgroundDisplay, cache, db, State, WidgetDisplay } from "./state";
 
 export const createId = (): string => nanoid(12);
 
@@ -138,36 +139,73 @@ export const toggleFocus = () => {
 
 /** Import database from a dump */
 export const importStore = (dump: any): void => {
-  // TODO: Add proper schema validation
   if (typeof dump !== "object" || dump === null)
     throw new TypeError("Unexpected format");
 
   resetStore();
-  if ("backgrounds" in dump) {
-    // Version 2 config
+
+  if ("dashboard" in dump && "storage" in dump) {
+    // Version 1 config (original Tabliss v1)
+    DB.put(db, `widget/default-time`, null);
+    DB.put(db, `widget/default-greeting`, null);
+    dump = migrateFrom2(migrateFrom1(dump));
+  } else if ("backgrounds" in dump) {
+    // Version 2 config (Tabliss v2)
     DB.put(db, `widget/default-time`, null);
     DB.put(db, `widget/default-greeting`, null);
     dump = migrateFrom2(dump);
-  } else if (dump.version === 3) {
-    // Version 3 config
-    delete dump.version;
-  } else if (dump.version > 3) {
+  } else if (
+    dump.version === 3 ||
+    (!dump.version &&
+      ("background" in dump ||
+        Object.keys(dump).some((k) => k.startsWith("widget/"))))
+  ) {
+    // Version 3 config (Tabliss v3 / TablissNG)
+    if ("version" in dump) delete dump.version;
+  } else if (dump.version && dump.version > 3) {
     // Future version
     throw new TypeError("Settings exported from a newer version of Tabliss");
   } else {
     // Unknown version
     throw new TypeError("Unknown settings version");
   }
-  // @ts-ignore
-  Object.entries(dump).forEach(([key, val]) => DB.put(db, key, val));
+
+  // Ensure default values for any missing new state properties in older backups
+  const defaults: Partial<State> = {
+    accent: "#3498db",
+    font: "",
+    themePreference: "system",
+    autoHideSettings: false,
+    highlightingEnabled: true,
+    hideSettingsIcon: false,
+    settingsIconPosition: "topLeft",
+    favicon: {
+      mode: "default",
+      url: "",
+      data: null,
+    },
+  };
+
+  const finalState = { ...defaults, ...dump };
+
+  // Restore keys into db
+  Object.entries(finalState).forEach(([key, val]) => {
+    if (val !== undefined) {
+      DB.put(db, key as any, val);
+    }
+  });
 };
 
 /** Export a database dump */
 export const exportStore = (): string => {
-  return JSON.stringify({
-    ...Object.fromEntries(DB.prefix(db, "")),
-    version: 3,
-  });
+  return JSON.stringify(
+    {
+      ...Object.fromEntries(DB.prefix(db, "")),
+      version: 3,
+    },
+    null,
+    2,
+  );
 };
 
 /** Reset the database */

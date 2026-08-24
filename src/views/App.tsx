@@ -56,6 +56,7 @@ const Root: FC = () => {
   const themePreference = useValue(db, "themePreference");
   const systemIsDark = useSystemTheme();
   const accent = useValue(db, "accent");
+  const font = useValue(db, "font");
   const highlightingEnabled = useValue(db, "highlightingEnabled");
 
   useEffect(() => {
@@ -74,6 +75,15 @@ const Root: FC = () => {
       document.documentElement.style.setProperty("--accent-color", accent);
     }
   }, [accent]);
+
+  // Update CSS variable when global font changes
+  useEffect(() => {
+    if (font) {
+      document.documentElement.style.setProperty("--app-font", font);
+    } else {
+      document.documentElement.style.removeProperty("--app-font");
+    }
+  }, [font]);
 
   useFavicon();
 
