@@ -1,4 +1,4 @@
-﻿name: Release
+name: Release
 
 on:
   push:
@@ -42,15 +42,34 @@ jobs:
 
       - name: Package extension
         run: |
-          cd dist/${{ matrix.build_target }}
-          zip -r ../../tabliss-${{ matrix.build_target }}.zip ./*
-          cd ../..
+          if [ "${{ matrix.build_target }}" = "chromium" ]; then
+            openssl genrsa -out key.pem 2048
+            if command -v google-chrome >/dev/null 2>&1; then
+              google-chrome --pack-extension=dist/chromium --pack-extension-key=key.pem
+              mv dist/chromium.crx tabliss-chromium.crx
+            elif command -v chromium >/dev/null 2>&1; then
+              chromium --pack-extension=dist/chromium --pack-extension-key=key.pem
+              mv dist/chromium.crx tabliss-chromium.crx
+            elif command -v chromium-browser >/dev/null 2>&1; then
+              chromium-browser --pack-extension=dist/chromium --pack-extension-key=key.pem
+              mv dist/chromium.crx tabliss-chromium.crx
+            else
+              npx --yes crx pack dist/chromium -p key.pem -o tabliss-chromium.crx
+            fi
+          elif [ "${{ matrix.build_target }}" = "firefox" ]; then
+            cd dist/firefox
+            zip -r ../../tabliss-firefox.xpi ./*
+            cd ../..
+          fi
 
-      - name: Upload zip artifact
+      - name: Upload release artifact
         uses: actions/upload-artifact@v4
         with:
-          name: tabliss-${{ matrix.build_target }}-zip
-          path: tabliss-${{ matrix.build_target }}.zip
+          name: tabliss-${{ matrix.build_target }}-pkg
+          path: |
+            tabliss-${{ matrix.build_target }}.crx
+            tabliss-${{ matrix.build_target }}.xpi
+          if-no-files-found: ignore
 
   create-release:
     needs: [build]
@@ -66,7 +85,7 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          pattern: tabliss-*-zip
+          pattern: tabliss-*-pkg
           merge-multiple: true
 
       - name: Determine release tag
@@ -96,8 +115,9 @@ jobs:
           name: ${{ steps.version.outputs.release_name }}
           tag_name: ${{ steps.version.outputs.tag_name }}
           files: |
-            tabliss-chromium.zip
-            tabliss-firefox.zip
+            tabliss-chromium.crx
+            tabliss-firefox.xpi
           draft: false
           prerelease: false
           generate_release_notes: true
+

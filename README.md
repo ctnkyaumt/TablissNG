@@ -24,9 +24,9 @@ TablissNG offers a clean new tab experience packed with useful widgets, dynamic 
 
 Download the latest pre-built extension packages from [Releases](https://github.com/ctnkyaumt/TablissNG/releases):
 
-1. **Chromium (Chrome, Brave, Edge, Opera)**: Download `tabliss-chromium.zip`, extract, and load unpacked via `chrome://extensions` (Developer mode enabled).
-2. **Firefox**: Download `tabliss-firefox.zip` and load via `about:debugging` (or install as temporary add-on).
-3. **Web**: Deploy or host `tabliss-web.zip` as a static progressive web app (PWA).
+1. **Chromium (Chrome, Brave, Edge, Opera)**: Download `tabliss-chromium.crx` and drag & drop into `chrome://extensions` (Developer mode enabled).
+2. **Firefox**: Download `tabliss-firefox.xpi` and open in Firefox (or load via `about:addons` / `about:debugging`).
+
 
 ---
 
