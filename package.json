@@ -1,6 +1,6 @@
 {
   "name": "tablissng",
-  "version": "1.7.2",
+  "version": "1.7.3",
   "description": "A beautiful, customizable New Tab page. This is an actively maintained fork of the original Tabliss project.",
   "license": "GPL-3.0",
   "private": true,
@@ -58,7 +58,6 @@
     "react-crossfade-simple": "^1.0.7",
     "react-dom": "^19.2.7",
     "react-error-boundary": "^6.1.2",
-    "react-github-btn": "^1.4.0",
     "react-github-calendar": "^5.0.6",
     "react-intl": "^10.1.17",
     "react-moveable": "^0.56.0",

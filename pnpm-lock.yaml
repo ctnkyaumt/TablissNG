@@ -51,9 +51,6 @@ importers:
       react-error-boundary:
         specifier: ^6.1.2
         version: 6.1.2(react@19.2.7)
-      react-github-btn:
-        specifier: ^1.4.0
-        version: 1.4.0(react@19.2.7)
       react-github-calendar:
         specifier: ^5.0.6
         version: 5.0.6(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
@@ -4372,9 +4369,6 @@ packages:
     resolution: {integrity: sha512-w9UMqWwJxHNOvoNzSJ2oPF5wvYcvP7jUvYzhp67yEhTi17ZDBBC1z9pTdGuzjD+EFIqLSYRweZjqfiPzQ06Ebg==}
     engines: {node: '>= 0.4'}
 
-  github-buttons@2.33.0:
-    resolution: {integrity: sha512-+WQ+r3nSM2/NGBo17LaQ2evPOEjXUmSLzFuZzpz9rCzwa7HrmIDQCaMx6uTsfL1aW7/bmBd5slREkCp3XKpuFw==}
-
   github-slugger@1.5.0:
     resolution: {integrity: sha512-wIh+gKBI9Nshz2o46B0B3f5k/W+WI9ZAv6y5Dn5WJ5SK1t0TnDimB4WE5rmTD05ZAIn8HALCZVmCsvj0w0v0lw==}
 
@@ -6300,11 +6294,6 @@ packages:
 
   react-fast-compare@3.2.2:
     resolution: {integrity: sha512-nsO+KSNgo1SbJqJEYRE9ERzo7YtYbou/OqjSQKxV7jcKox7+usiUVZOAC+XnDOABXggQTno0Y1CpVnuWEc1boQ==}
-
-  react-github-btn@1.4.0:
-    resolution: {integrity: sha512-lV4FYClAfjWnBfv0iNlJUGhamDgIq6TayD0kPZED6VzHWdpcHmPfsYOZ/CFwLfPv4Zp+F4m8QKTj0oy2HjiGXg==}
-    peerDependencies:
-      react: '>=16.3.0'
 
   react-github-calendar@5.0.6:
     resolution: {integrity: sha512-BXgk1blzmkXjzc3CJRtSxscNuL0y/pHHVihmY+H+8bak0Syg2G/7gCM4Ja6CzE5wtABDv6N97kKSufWqMazq/g==}
@@ -13059,8 +13048,6 @@ snapshots:
       es-errors: 1.3.0
       get-intrinsic: 1.3.0
 
-  github-buttons@2.33.0: {}
-
   github-slugger@1.5.0: {}
 
   glob-parent@5.1.2:
@@ -15346,11 +15333,6 @@ snapshots:
       react: 19.2.7
 
   react-fast-compare@3.2.2: {}
-
-  react-github-btn@1.4.0(react@19.2.7):
-    dependencies:
-      github-buttons: 2.33.0
-      react: 19.2.7
 
   react-github-calendar@5.0.6(react-dom@19.2.7(react@19.2.7))(react@19.2.7):
     dependencies:
